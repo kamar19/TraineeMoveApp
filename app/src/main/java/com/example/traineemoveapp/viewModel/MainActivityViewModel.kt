@@ -9,9 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class MainActivityViewModel : ViewModel() {
-
     var films: MutableList<Film> = initFilmsList()
-
     val _uiState = MutableStateFlow(DiceUiState())
     val uiState: StateFlow<DiceUiState> = _uiState.asStateFlow()
 
