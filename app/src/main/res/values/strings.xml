@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TraineeMoveApp</string>
+    <string name="a11y_plant_item_image">Picture of film</string>
 </resources>
