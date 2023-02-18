@@ -9,7 +9,7 @@ class DetailFilmViewModel (val filmRepository: FilmRepository, idFilm:Int ) : Vi
     var film: Film? = filmRepository.getFilm(idFilm)
 
     fun getImage(idFilm:Int):Int {
-        val idImage =  filmRepository.getFilm(idFilm)?.idPhoto
+        val idImage =  filmRepository.getFilm(idFilm)?.id_photo
         when (idImage) {
             1-> return R.drawable.image1
             2-> return R.drawable.image2

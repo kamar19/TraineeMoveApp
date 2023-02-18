@@ -1,3 +1,14 @@
 package com.example.traineemoveapp.model
 
-data class Film(val id: Int? = null, val name: String = "", val idPhoto: Int = -1, val date_publication: String= "", val rating: Int = 0, val description: String= "")
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class Film(
+        var id: Int? = null,
+        var name: String = "",
+        var id_photo: Int = -1,
+        var date_publication: String = "",
+        var rating: Int = 0,
+        var description: String = ""
+)
+

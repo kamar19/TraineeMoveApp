@@ -8,17 +8,17 @@ import androidx.compose.material.*
 import androidx.compose.ui.Modifier
 import com.example.traineemoveapp.ui.theme.TraineeMoveAppTheme
 import com.example.traineemoveapp.navigation.FilmAppScreen
-import com.example.traineemoveapp.repository.DefaultRepositoryImpl
+import com.example.traineemoveapp.repository.FromJsonRepository
 
 class MainActivity : ComponentActivity() {
-    val defaultRepositoryImpl = DefaultRepositoryImpl()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val repository = FromJsonRepository(applicationContext)
         setContent {
             TraineeMoveAppTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    FilmAppScreen(defaultRepositoryImpl)
+                    FilmAppScreen(repository)
                 }
             }
         }
@@ -32,6 +32,6 @@ class MainActivity : ComponentActivity() {
             const val DETAIL_IMAGE_HEIGHT = 250
             const val TITLE_TEXT_MAX_LINES = 2
             const val DETAIL_TEXT_MAX_LINES = 8
-
+            const val ASSET_FILE_NAME = "data.json"
     }
 }
