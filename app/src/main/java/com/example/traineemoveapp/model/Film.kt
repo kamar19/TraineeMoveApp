@@ -1,3 +1,3 @@
 package com.example.traineemoveapp.model
 
-data class Film(val id: Int, val name: String, val photo: String, val date_publication: String, val rating: Int, val description: String)
+data class Film(val id: Int? = null, val name: String = "", val idPhoto: Int = -1, val date_publication: String= "", val rating: Int = 0, val description: String= "")

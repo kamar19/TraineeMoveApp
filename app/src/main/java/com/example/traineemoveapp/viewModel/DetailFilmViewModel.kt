@@ -4,16 +4,12 @@ import androidx.lifecycle.ViewModel
 import com.example.traineemoveapp.R
 import com.example.traineemoveapp.model.Film
 import com.example.traineemoveapp.repository.FilmRepository
-import kotlinx.coroutines.flow.*
 
-class MainActivityViewModel(private val filmRepository: FilmRepository) : ViewModel() {
-    var films: MutableList<Film> = filmRepository.getAllFils()
+class DetailFilmViewModel (val filmRepository: FilmRepository, idFilm:Int ) : ViewModel() {
+    var film: Film? = filmRepository.getFilm(idFilm)
 
-    @JvmName("getFilms1") fun getFilms(): MutableList<Film> {
-        return films
-    }
-
-    fun getImage(idImage:Int):Int {
+    fun getImage(idFilm:Int):Int {
+        val idImage =  filmRepository.getFilm(idFilm)?.idPhoto
         when (idImage) {
             1-> return R.drawable.image1
             2-> return R.drawable.image2
@@ -22,4 +18,5 @@ class MainActivityViewModel(private val filmRepository: FilmRepository) : ViewMo
             else -> return R.drawable.image1
         }
     }
+
 }
