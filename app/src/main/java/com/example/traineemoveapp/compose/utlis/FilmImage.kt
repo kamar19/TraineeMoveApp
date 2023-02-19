@@ -11,11 +11,14 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.RequestBuilderTransform
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import com.example.traineemoveapp.MainActivity.Companion.DETAIL_IMAGE_HEIGHT
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun FilmImage(
         model: Any?,
@@ -31,14 +34,7 @@ fun FilmImage(
         Box(modifier = modifier.background(Color.Magenta))
         return
     }
-    GlideImage(
-            model = model,
-            contentDescription = contentDescription,
-            modifier = modifier,
-            alignment = alignment,
-            contentScale = contentScale,
-            alpha = alpha,
-            colorFilter = colorFilter,
-            requestBuilderTransform = requestBuilderTransform
-    )
+    Image(painter = painterResource(id = model as Int), contentDescription = "", alignment = Alignment.TopStart, contentScale = ContentScale.FillBounds, modifier = Modifier
+            .height(DETAIL_IMAGE_HEIGHT.dp)
+            .fillMaxWidth())
 }
