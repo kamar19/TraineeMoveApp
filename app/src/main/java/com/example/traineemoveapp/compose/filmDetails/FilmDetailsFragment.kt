@@ -17,10 +17,10 @@ import com.example.traineemoveapp.viewModel.DetailFilmViewModel
 
 @Composable fun FilmDetailsFragment(
         modifier: Modifier = Modifier,
-        filmRepository: FilmRepository,
+        viewModel: DetailFilmViewModel,
         idFilm: Int,
 ) {
-    val viewModel =  DetailFilmViewModel(filmRepository, idFilm)
+
     val film = viewModel.film
 
     film?.let {

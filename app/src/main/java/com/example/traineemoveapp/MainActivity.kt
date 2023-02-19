@@ -9,16 +9,22 @@ import androidx.compose.ui.Modifier
 import com.example.traineemoveapp.ui.theme.TraineeMoveAppTheme
 import com.example.traineemoveapp.navigation.FilmAppScreen
 import com.example.traineemoveapp.repository.FromJsonRepository
+import com.example.traineemoveapp.viewModel.MainActivityViewModel
+import com.google.gson.Gson
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val repository = FromJsonRepository(applicationContext)
+        val stream = applicationContext.assets.open(ASSET_FILE_NAME)
+        val gson = Gson()
+        val repository = FromJsonRepository(stream, gson)
+        val viewModel = MainActivityViewModel(repository)
+
         setContent {
             TraineeMoveAppTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    FilmAppScreen(repository)
+                    FilmAppScreen(viewModel, repository)
                 }
             }
         }

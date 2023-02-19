@@ -2,4 +2,6 @@
     <string name="app_name">TraineeMoveApp</string>
     <string name="a11y_film_item_image">Picture of film</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="loader_text">This may take a while...</string>
+    <string name="search_text">"search..."</string>
 </resources>

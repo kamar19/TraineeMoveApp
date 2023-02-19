@@ -13,6 +13,8 @@ import com.example.traineemoveapp.MainActivity.Companion.LIST_FILMS
 import com.example.traineemoveapp.compose.filmDetails.FilmDetailsFragment
 import com.example.traineemoveapp.compose.filmList.FilmListFragment
 import com.example.traineemoveapp.repository.FilmRepository
+import com.example.traineemoveapp.viewModel.DetailFilmViewModel
+import com.example.traineemoveapp.viewModel.MainActivityViewModel
 
 sealed class NavRoute(val route: String) {
     object FilmListRoute : NavRoute(LIST_FILMS)
@@ -21,7 +23,7 @@ sealed class NavRoute(val route: String) {
     }
 }
 
-@Composable fun FilmAppScreen(filmRepositoryImpl: FilmRepository) {
+@Composable fun FilmAppScreen(viewModel:MainActivityViewModel, filmRepositoryImpl: FilmRepository) {
     val navController = rememberNavController()
     NavHost(
             navController = navController,
@@ -30,7 +32,7 @@ sealed class NavRoute(val route: String) {
         composable(route = NavRoute.FilmListRoute.route) {
             FilmListFragment(onClickToDetailScreen = { filmId ->
                 navController.navigate(NavRoute.DetailsRoute.createRoute(filmId))
-            }, filmRepositoryImpl = filmRepositoryImpl)
+            }, viewModel = viewModel)
         }
         composable(route = NavRoute.DetailsRoute.route, arguments = listOf(navArgument(FILM_ID) {
             type = NavType.IntType
@@ -38,7 +40,8 @@ sealed class NavRoute(val route: String) {
             val filmId = backStackEntry.arguments?.getInt(FILM_ID)
             Log.v("test_log","filmId = " + filmId.toString() )
             requireNotNull(filmId) { "gamesId parameter wasn't found. Please make sure it's set!" }
-            FilmDetailsFragment(filmRepository = filmRepositoryImpl, idFilm = filmId )
+            val viewModel = DetailFilmViewModel(filmRepositoryImpl, filmId)
+            FilmDetailsFragment(viewModel = viewModel, idFilm = filmId )
         }
     }
 }

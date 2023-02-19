@@ -6,29 +6,28 @@ import com.example.traineemoveapp.model.Film
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class FromJsonRepository(context: Context) : FilmRepository {
+class FromJsonRepository(stream: java.io.InputStream, val gson: Gson,) : FilmRepository {
     var films: MutableList<Film> = arrayListOf<Film>()
 
     init {
-        films = initFilms(context)
+        films = initFilms(stream)
     }
 
-    private fun initFilms(context: Context): MutableList<Film> {
-        return loadFilms(context, ASSET_FILE_NAME)
+    private fun initFilms(stream: java.io.InputStream): MutableList<Film> {
+        return loadFilms(stream)
     }
 
-    private fun readAssetFileToString(context: Context, fileName: String): String {
-        val stream = context.assets.open(fileName)
+    private fun readAssetFileToString(stream: java.io.InputStream): String {
         return stream.bufferedReader().readText()
     }
 
-    fun loadFilms(context: Context, fileName: String): MutableList<Film> {
-        val data = readAssetFileToString(context, fileName)
+    fun loadFilms(stream: java.io.InputStream): MutableList<Film> {
+        val data = readAssetFileToString(stream)
         return parseMovies(data)
     }
 
     fun parseMovies(data: String): MutableList<Film> {
-        return Gson().fromJson(data, object : TypeToken<MutableList<Film>>() {}.type)
+        return gson.fromJson(data, object : TypeToken<MutableList<Film>>() {}.type)
     }
 
     override fun getAllFils(): MutableList<Film> {

@@ -7,8 +7,12 @@ import com.example.traineemoveapp.repository.FilmRepository
 import kotlinx.coroutines.flow.*
 
 class MainActivityViewModel(private val filmRepository: FilmRepository) : ViewModel() {
+
+
     private val _uiState = MutableStateFlow(ViewModelListState())
     val uiState: StateFlow<ViewModelListState> get() = _uiState.asStateFlow()
+
+    data class ViewModelListState(val films: MutableList<Film> = mutableListOf())
 
     init {
         startValue()
@@ -28,5 +32,4 @@ class MainActivityViewModel(private val filmRepository: FilmRepository) : ViewMo
         }
     }
 
-    data class ViewModelListState(val films: MutableList<Film> = mutableListOf())
 }
