@@ -31,7 +31,7 @@ import com.example.traineemoveapp.viewModel.DetailFilmViewModel
         ) {
             FilmImage(model = viewModel.getImage(idFilm) , contentDescription = stringResource(com.example.traineemoveapp.R.string.a11y_film_item_image), Modifier
                     .fillMaxWidth()
-                    .height(dimensionResource(id = com.example.traineemoveapp.R.dimen.plant_item_image_height)), contentScale = ContentScale.Crop)
+                    .height(dimensionResource(id = com.example.traineemoveapp.R.dimen.flim_list_item_image_height)), contentScale = ContentScale.Crop)
             Text(text = it.name, textAlign = TextAlign.Center, maxLines = TITLE_TEXT_MAX_LINES, modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = dimensionResource(id = com.example.traineemoveapp.R.dimen.margin_normal))
