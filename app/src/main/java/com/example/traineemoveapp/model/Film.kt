@@ -10,6 +10,7 @@ data class Film(
         var date_publication: String = "",
         var rating: Float = 0.0F,
         var description: String = "",
-        var pg: String = ""
+        var pg: String = "",
+        var genre_ids:List<Int>
 )
 
