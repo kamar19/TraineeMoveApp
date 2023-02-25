@@ -12,7 +12,6 @@ import androidx.compose.ui.text.style.TextAlign
 import com.example.traineemoveapp.MainActivity.Companion.DETAIL_TEXT_MAX_LINES
 import com.example.traineemoveapp.MainActivity.Companion.TITLE_TEXT_MAX_LINES
 import com.example.traineemoveapp.compose.utlis.FilmImage
-import com.example.traineemoveapp.repository.FilmRepository
 import com.example.traineemoveapp.viewModel.DetailFilmViewModel
 
 @Composable fun FilmDetailsFragment(
@@ -20,9 +19,7 @@ import com.example.traineemoveapp.viewModel.DetailFilmViewModel
         viewModel: DetailFilmViewModel,
         idFilm: Int,
 ) {
-
     val film = viewModel.film
-
     film?.let {
         Column(
                 verticalArrangement = Arrangement.Center,

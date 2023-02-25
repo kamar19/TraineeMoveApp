@@ -14,9 +14,37 @@ class MainActivityViewModel(private val filmRepository: FilmRepository) : ViewMo
     private val selectedGenres: MutableList<Int> = mutableListOf()
     var allFilms: MutableList<Film> = mutableListOf()
 
+    data class ViewModelInputState(var searchText: String)
+    private val _uiInputState = MutableStateFlow(ViewModelInputState(""))
+    val uiInputState: StateFlow<ViewModelInputState> get() = _uiInputState.asStateFlow()
+
+    data class ViewModelListState(val films: MutableList<Film> = mutableListOf())
     private val _uiState = MutableStateFlow(ViewModelListState())
     val uiState: StateFlow<ViewModelListState> get() = _uiState.asStateFlow()
 
+    init {
+        startValue()
+    }
+
+    fun findFilmsByText(newText:String){
+        if (newText.length > 0) {
+            changeSearchText(newText)
+            changeFilms(allFilms.filter { it.name.contains(uiInputState.value.searchText, true) } as MutableList<Film>)
+        } else {
+            changeSearchText("")
+            changeFilms(allFilms)
+        }
+    }
+
+    fun changeSearchText(newText:String){
+        _uiInputState.value.searchText =  newText
+    }
+
+    fun checkSelectedGenre(idGenres: Int):Boolean {
+        return selectedGenres.contains(idGenres)
+    }
+
+    @JvmName("getSelectedGenres1")
     fun getSelectedGenres(): MutableList<Int> {
         return selectedGenres
     }
@@ -27,13 +55,6 @@ class MainActivityViewModel(private val filmRepository: FilmRepository) : ViewMo
         } else {
             selectedGenres.add (genre)
         }
-    }
-
-    data class ViewModelListState(val films: MutableList<Film> = mutableListOf())
-
-    init {
-        startValue()
-
     }
 
     fun changeFilms(newfilms: MutableList<Film>) {
@@ -74,7 +95,5 @@ class MainActivityViewModel(private val filmRepository: FilmRepository) : ViewMo
         genres.add(Genre(6,"драмы"))
         return genres
     }
-
-
 
 }

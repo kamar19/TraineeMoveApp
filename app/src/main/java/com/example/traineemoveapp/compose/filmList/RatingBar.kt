@@ -20,12 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.example.traineemoveapp.R
 
 @Composable
-fun RatingBar(
-        modifier: Modifier = Modifier,
-        rating: Float,
-        size:Dp,
-        spaceBetween: Dp = 0.dp
-) {
+fun RatingBar(modifier: Modifier = Modifier, rating: Float, size: Dp, spaceBetween: Dp = 0.dp) {
 
     val image = ImageBitmap.imageResource(id = R.drawable.star)
     val imageFull = ImageBitmap.imageResource(id = R.drawable.draw_star)
@@ -38,61 +33,34 @@ fun RatingBar(
     val totalWidth = width * totalCount + spaceBetween * (totalCount - 1)
 
 
-    Box(
-            modifier
-                    .width(totalWidth)
-                    .height(height)
-                    .drawBehind {
-                        drawRating(rating, image, imageFull, space)
-                    })
+    Box(modifier
+            .width(totalWidth)
+            .height(height)
+            .drawBehind {
+                drawRating(rating, image, imageFull, space)
+            })
 }
 
-private fun DrawScope.drawRating(
-        rating: Float,
-        image: ImageBitmap,
-        imageFull: ImageBitmap,
-        space: Float
-) {
-
+private fun DrawScope.drawRating(rating: Float, image: ImageBitmap, imageFull: ImageBitmap, space: Float) {
     val totalCount = 5
-
     val imageWidth = image.width.toFloat()
     val imageHeight = size.height
-
     val reminder = rating - rating.toInt()
     val ratingInt = (rating - reminder).toInt()
-
     for (i in 0 until totalCount) {
-
         val start = imageWidth * i + space * i
-
-        drawImage(
-                image = image,
-                topLeft = Offset(start, 0f)
-        )
+        drawImage(image = image, topLeft = Offset(start, 0f))
     }
-
     drawWithLayer {
         for (i in 0 until totalCount) {
             val start = imageWidth * i + space * i
             // Destination
-            drawImage(
-                    image = imageFull,
-                    topLeft = Offset(start, 0f)
-            )
+            drawImage(image = imageFull, topLeft = Offset(start, 0f))
         }
-
         val end = imageWidth * totalCount + space * (totalCount - 1)
         val start = rating * imageWidth + ratingInt * space
         val size = end - start
-
-        // Source
-        drawRect(
-                Color.Transparent,
-                topLeft = Offset(start, 0f),
-                size = Size(size, height = imageHeight),
-                blendMode = BlendMode.SrcIn
-        )
+        drawRect(Color.Transparent, topLeft = Offset(start, 0f), size = Size(size, height = imageHeight), blendMode = BlendMode.SrcIn)
     }
 }
 

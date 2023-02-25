@@ -1,7 +1,5 @@
 package com.example.traineemoveapp.repository
 
-import android.content.Context
-import com.example.traineemoveapp.MainActivity.Companion.ASSET_FILE_NAME
 import com.example.traineemoveapp.model.Film
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

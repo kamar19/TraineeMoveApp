@@ -1,6 +1,6 @@
 package com.example.traineemoveapp.compose.filmList
 
-import android.util.Log
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -17,9 +17,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.traineemoveapp.MainActivity.Companion.COUNT_ROWS
@@ -27,15 +29,18 @@ import com.example.traineemoveapp.R
 import com.example.traineemoveapp.model.Genre
 import com.example.traineemoveapp.viewModel.MainActivityViewModel
 
-@Composable fun FilmListFragment(modifier: Modifier = Modifier, viewModel: MainActivityViewModel, onClickToDetailScreen: (Int) -> Unit = {},  onClickToSelectCategory: (Int) -> Unit = {}) {
+@Composable fun FilmListFragment(modifier: Modifier = Modifier, viewModel: MainActivityViewModel, titleText:String , onClickToDetailScreen: (Int) -> Unit = {},  onClickToSelectCategory: (Int) -> Unit = {}, onInputText: (String) -> Unit = {} ) {
         Column(
                 modifier = modifier,
                 verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SearchField(
-                    textSeach = "" )
-            CategoryFilmsView(viewModel.getAllGenres(), onClickToSelectCategory)
+            SearchField(viewModel, onInputText)
+            Text(text = titleText, fontWeight = FontWeight.Bold, textAlign = TextAlign.Start,  fontSize = 16.sp, maxLines = 2, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding( vertical = 10.dp, horizontal = 20.dp)
+            )
+            CategoryFilmsView(viewModel, onClickToSelectCategory)
             FilmListGrid(
                     modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.margin_normal)),
                     onClickToDetailScreen = onClickToDetailScreen,
@@ -44,17 +49,21 @@ import com.example.traineemoveapp.viewModel.MainActivityViewModel
         }
 }
 
-
-@Composable
-private fun SearchField(textSeach: String)
+@SuppressLint("StateFlowValueCalledInComposition") @Composable
+private fun SearchField(viewModel:MainActivityViewModel, onInputText: (String) -> Unit = {} )
  {
+     val text = remember {
+         mutableStateOf("")
+     }
     TextField(
             modifier = Modifier
                     .fillMaxWidth()
                     .height(55.dp),
-            value = textSeach,
             onValueChange = {
+                text.value = it
+                onInputText(text.value)
             },
+            value = text.value,
             textStyle = TextStyle(color = Color.Black, fontSize = 13.sp),
             trailingIcon = {
                 Icon(Icons.Default.Search,
@@ -98,15 +107,14 @@ private fun SearchField(textSeach: String)
     }
 }
 
-
 @Composable
-fun CategoryFilmsView(categoryFilms: MutableList<Genre>, onClickToSelectCategory: (Int) -> Unit = {} ) {
+fun CategoryFilmsView(viewModel:MainActivityViewModel, onClickToSelectCategory: (Int) -> Unit = {} ) {
     LazyRow(contentPadding = PaddingValues(start = 20.dp)) {
-        items(items = categoryFilms,) {
+        items(items = viewModel.getAllGenres()) {
             category ->
             category.id?.let {
                 val textChipRememberOneState = remember {
-                    mutableStateOf(false)
+                    mutableStateOf(viewModel.checkSelectedGenre(it))
                 }
                 GenresChip(item = category,  isSelected = textChipRememberOneState.value, {
                     onClickToSelectCategory(it)
@@ -117,14 +125,11 @@ fun CategoryFilmsView(categoryFilms: MutableList<Genre>, onClickToSelectCategory
     }
 }
 
-
     @OptIn(ExperimentalMaterialApi::class) @Composable
     fun GenresChip(item: Genre, isSelected:Boolean, onClickToSelectCategory: () -> Unit = {}) {
         val onClickToSelectCategory2: () -> Unit = {
-            Log.v("test_log", "GenresChip - genreId = " + item.id.toString())
             onClickToSelectCategory()
         }
-
         Chip(
                 onClick = onClickToSelectCategory2,
                 modifier = Modifier
