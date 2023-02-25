@@ -24,7 +24,8 @@ fun FilmListItem(film: Film, idImage: Int, onClick: () -> Unit) {
     ImageListItem(name = film.name, idImage = idImage, descriptionText = film.description, raiting = film.rating, pg = film.pg, onClick = onClick)
 }
 
-@OptIn(ExperimentalMaterialApi::class) @Composable fun ImageListItem(name: String, idImage: Int, descriptionText: String, raiting: Float, pg: String, onClick: () -> Unit) {
+@OptIn(ExperimentalMaterialApi::class) @Composable
+fun ImageListItem(name: String, idImage: Int, descriptionText: String, raiting: Float, pg: String, onClick: () -> Unit) {
     Card(onClick = onClick, elevation = dimensionResource(id = R.dimen.card_elevation), modifier = Modifier
             .padding(horizontal = dimensionResource(id = R.dimen.card_side_margin))
             .padding(top = dimensionResource(id = R.dimen.card_bottom_margin), bottom = dimensionResource(id = R.dimen.card_bottom_margin))) {
