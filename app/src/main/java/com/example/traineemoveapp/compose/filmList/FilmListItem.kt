@@ -40,10 +40,10 @@ fun ImageListItem(name: String, idImage: Int, descriptionText: String, raiting: 
                     .fillMaxWidth()
                     .padding( vertical = 10.dp, horizontal = 5.dp)
                     .wrapContentWidth(Alignment.CenterHorizontally))
-            Row(modifier = Modifier.padding(start = 5.dp, end = 5.dp, bottom = 2.dp).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+            Row(modifier = Modifier.padding(start = 5.dp, end = 5.dp, bottom = 3.dp, top = 3.dp).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
 
             ) {
-                RatingBar(rating = raiting, spaceBetween = 3.dp, size = 20.dp)
+                RatingBar(rating = raiting, spaceBetween = 3.dp, size = 20.dp, modifier = Modifier)
                 AgeRatingComponent(ageRating = pg)
             }
         }
@@ -57,7 +57,7 @@ fun AgeRatingComponent(ageRating: String) {
             fontSize = 10.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier
-                    .padding(11.dp)
+                    .padding(5.dp)
                     .fillMaxWidth()
                     .drawBehind {
                         drawCircle(

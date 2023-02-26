@@ -10,7 +10,7 @@
     <dimen name="card_elevation">0dp</dimen>
     <dimen name="header_margin">24dp</dimen>
     <dimen name="film_item_horizontal">10dp</dimen>
-    <dimen name="film_item_vertical">2dp</dimen>
+    <dimen name="film_item_vertical">10dp</dimen>
 
 
 </resources>

@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.example.traineemoveapp.R
 
 @Composable
-fun RatingBar(modifier: Modifier = Modifier, rating: Float, size: Dp, spaceBetween: Dp = 0.dp) {
+fun RatingBar(modifier: Modifier, rating: Float, size: Dp, spaceBetween: Dp = 0.dp) {
 
     val image = ImageBitmap.imageResource(id = R.drawable.star)
     val imageFull = ImageBitmap.imageResource(id = R.drawable.draw_star)
