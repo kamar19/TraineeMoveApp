@@ -11,6 +11,7 @@ data class Film(
         var rating: Float = 0.0F,
         var description: String = "",
         var pg: String = "",
-        var genre_ids:List<Int>
+        var genre_ids:List<Int>,
+        var actor_ids:List<Int>
 )
 

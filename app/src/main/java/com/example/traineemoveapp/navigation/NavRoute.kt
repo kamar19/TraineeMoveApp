@@ -49,7 +49,7 @@ sealed class NavRoute(val route: String) {
         })) { backStackEntry ->
             val filmId = backStackEntry.arguments?.getInt(FILM_ID)
             requireNotNull(filmId) { "gamesId parameter wasn't found. Please make sure it's set!" }
-            val viewModelDetail = DetailFilmViewModel(viewModel.filmRepository, viewModel.genreRepository, filmId)
+            val viewModelDetail = DetailFilmViewModel(viewModel.filmRepository, filmId)
             FilmDetailsFragment(viewModel = viewModelDetail, idFilm = filmId )
         }
     }

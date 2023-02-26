@@ -6,12 +6,10 @@ import com.example.traineemoveapp.R
 import com.example.traineemoveapp.model.Film
 import com.example.traineemoveapp.model.Genre
 import com.example.traineemoveapp.repository.FilmRepository
-import com.example.traineemoveapp.repository.GenreRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class MainActivityViewModel(val filmRepository: FilmRepository, val genreRepository: GenreRepository) : ViewModel() {
-//    private val genres = genreRepository.getAllGenre()
+class MainActivityViewModel(val filmRepository: FilmRepository) : ViewModel() {
     private val selectedGenres: MutableList<Int> = mutableListOf()
     var allFilms: MutableList<Film> = mutableListOf()
 
@@ -79,7 +77,7 @@ class MainActivityViewModel(val filmRepository: FilmRepository, val genreReposit
         }
     }
     fun getAllGenres(): MutableList<Genre> {
-        return genreRepository.getAllGenre()
+        return filmRepository.getAllGenre()
     }
 
 }

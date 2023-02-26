@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.traineemoveapp.MainActivity.Companion.DETAIL_TEXT_MAX_LINES
 import com.example.traineemoveapp.MainActivity.Companion.TITLE_TEXT_MAX_LINES
+import com.example.traineemoveapp.R
 import com.example.traineemoveapp.compose.filmList.AgeRatingComponent
 import com.example.traineemoveapp.compose.filmList.RatingBar
 import com.example.traineemoveapp.model.Genre
@@ -51,8 +52,12 @@ import com.example.traineemoveapp.viewModel.DetailFilmViewModel
                                         modifier = Modifier.padding(10.dp), fontSize = 12.sp,
                                 )
                             }
-                            Text(text = it.name, maxLines = TITLE_TEXT_MAX_LINES,  fontSize = 22.sp, fontWeight = Bold, modifier = Modifier.padding(10.dp).align(Alignment.Start))
-                            RatingBar(rating = film.rating, spaceBetween = 3.dp, size = 20.dp, modifier = Modifier.padding(10.dp).align(Alignment.Start))
+                            Text(text = it.name, maxLines = TITLE_TEXT_MAX_LINES,  fontSize = 25.sp, fontWeight = Bold, modifier = Modifier
+                                    .padding(10.dp)
+                                    .align(Alignment.Start))
+                            RatingBar(rating = film.rating, spaceBetween = 3.dp, size = 20.dp, modifier = Modifier
+                                    .padding(10.dp)
+                                    .align(Alignment.Start))
                         }
                             Box(modifier =  Modifier, contentAlignment = Alignment.TopEnd,  ) {
                                 AgeRatingComponent(ageRating = film.pg)
@@ -60,7 +65,12 @@ import com.example.traineemoveapp.viewModel.DetailFilmViewModel
                         }
                     Text(text = it.description, textAlign = TextAlign.Start, maxLines = DETAIL_TEXT_MAX_LINES,  modifier = Modifier
                             .fillMaxWidth()
-                            .padding(10.dp).align(Alignment.Start))
+                            .padding(10.dp)
+                            .align(Alignment.Start))
+                        Text(text = stringResource(R.string.artist_title_text), fontSize = 22.sp, textAlign = TextAlign.Start, maxLines = 1,  modifier = Modifier
+                                .padding(10.dp)
+                                .align(Alignment.Start))
+                        ActorsListView(viewModel, film.actor_ids)
         }
             ) {
                 FilmImageDetails(model = viewModel.getImage(idFilm), contentDescription = stringResource(com.example.traineemoveapp.R.string.a11y_film_item_image))
@@ -97,4 +107,15 @@ import com.example.traineemoveapp.viewModel.DetailFilmViewModel
     Image(painter = painterResource(id = model as Int), contentDescription = null, alignment = Alignment.TopStart, contentScale = ContentScale.FillWidth, modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)))
+}
+
+@Composable fun ActorsListView(viewModel: DetailFilmViewModel, actor_ids: List<Int>) {
+    LazyRow(contentPadding = PaddingValues(start = 20.dp)) {
+        val actors = viewModel.getFilmActors(actor_ids as MutableList<Int>)
+        items(items = actors) { actor ->
+            actor.let {
+                ActorListItem(viewModel, actor = it)
+            }
+        }
+    }
 }

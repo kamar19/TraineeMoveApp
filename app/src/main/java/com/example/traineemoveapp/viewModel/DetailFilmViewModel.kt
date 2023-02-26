@@ -2,12 +2,12 @@ package com.example.traineemoveapp.viewModel
 
 import androidx.lifecycle.ViewModel
 import com.example.traineemoveapp.R
+import com.example.traineemoveapp.model.Actor
 import com.example.traineemoveapp.model.Film
 import com.example.traineemoveapp.model.Genre
 import com.example.traineemoveapp.repository.FilmRepository
-import com.example.traineemoveapp.repository.GenreRepository
 
-class DetailFilmViewModel (val filmRepository: FilmRepository, val genreRepository: GenreRepository, idFilm:Int ) : ViewModel() {
+class DetailFilmViewModel (val filmRepository: FilmRepository, idFilm:Int ) : ViewModel() {
     var film: Film? = filmRepository.getFilm(idFilm)
 
     fun getImage(idFilm:Int):Int {
@@ -21,13 +21,27 @@ class DetailFilmViewModel (val filmRepository: FilmRepository, val genreReposito
         }
     }
 
-    fun getAllGenres(): MutableList<Genre> {
-        return genreRepository.getAllGenre()
-    }
-
     fun getFilmGenres(filmGenres: MutableList<Int>): MutableList<Genre> {
-        val allGenres = genreRepository.getAllGenre()
+        val allGenres = filmRepository.getAllGenre()
         return allGenres.filter { filmGenres.contains(it.id) } as MutableList<Genre>
     }
 
+    fun getFilmActors(actors: MutableList<Int>): MutableList<Actor> {
+        val allActors = filmRepository.getAllActor()
+        return allActors.filter { actors.contains(it.id) } as MutableList<Actor>
+    }
+
+    fun getActorImage(id_actor:Int):Int {
+        val idImage =  filmRepository.getActor(id_actor)?.id
+        when (idImage) {
+            1-> return R.drawable.act1
+            2-> return R.drawable.act2
+            3-> return R.drawable.act3
+            4-> return R.drawable.act4
+            5-> return R.drawable.act5
+            6-> return R.drawable.act6
+            7-> return R.drawable.act6
+            else -> return R.drawable.act1
+        }
+    }
 }

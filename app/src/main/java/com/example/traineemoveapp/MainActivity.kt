@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import com.example.traineemoveapp.ui.theme.TraineeMoveAppTheme
 import com.example.traineemoveapp.navigation.FilmAppScreen
 import com.example.traineemoveapp.repository.FromJsonRepository
-import com.example.traineemoveapp.repository.GenreRepositoryImpl
 import com.example.traineemoveapp.viewModel.MainActivityViewModel
 import com.google.gson.Gson
 
@@ -17,12 +16,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val stream = applicationContext.assets.open(ASSET_FILE_NAME)
         val gson = Gson()
-        val filmRepository = FromJsonRepository(stream, gson)
-        val genreRepository = GenreRepositoryImpl()
+        val filmRepository = FromJsonRepository(this, gson)
 
-        val viewModel = MainActivityViewModel(filmRepository, genreRepository)
+        val viewModel = MainActivityViewModel(filmRepository)
 
         setContent {
             TraineeMoveAppTheme {
@@ -41,8 +38,11 @@ class MainActivity : ComponentActivity() {
             const val DETAIL_CARD_HEIGHT = 400
             const val DETAIL_IMAGE_HEIGHT = 230
             const val DETAIL_IMAGE_WIDTH = 170
+            const val ACTOR_IMAGE_HEIGHT = 196
+            const val ACTOR_IMAGE_WIDTH = 150
             const val TITLE_TEXT_MAX_LINES = 2
             const val DETAIL_TEXT_MAX_LINES = 8
             const val ASSET_FILE_NAME = "data.json"
+            const val ASSET_FILE_NAME_ACTOR = "people.json"
     }
 }

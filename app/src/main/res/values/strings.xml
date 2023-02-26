@@ -5,4 +5,5 @@
     <string name="loader_text">This may take a while...</string>
     <string name="search_text">"search..."</string>
     <string name="title_text">"Популярное сейчас"</string>
+    <string name="artist_title_text">"Актеры"</string>
 </resources>
