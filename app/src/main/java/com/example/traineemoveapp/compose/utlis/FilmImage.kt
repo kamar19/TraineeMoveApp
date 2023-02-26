@@ -26,7 +26,6 @@ import com.example.traineemoveapp.MainActivity.Companion.DETAIL_IMAGE_WIDTH
 @Composable
 fun FilmImage(
         model: Any?,
-        contentDescription: String?,
         modifier: Modifier = Modifier,
         alignment: Alignment = Alignment.Center,
         contentScale: ContentScale = ContentScale.Fit,
@@ -38,7 +37,7 @@ fun FilmImage(
         Box(modifier = modifier.background(Color.Magenta))
         return
     }
-    Image(painter = painterResource(id = model as Int), contentDescription = "", alignment = Alignment.TopStart, contentScale = ContentScale.Crop, modifier = Modifier
+    Image(painter = painterResource(id = model as Int), contentDescription = null, alignment = Alignment.TopStart, contentScale = ContentScale.Crop, modifier = Modifier
             .height(DETAIL_IMAGE_HEIGHT.dp)
             .width(DETAIL_IMAGE_WIDTH.dp)
             .fillMaxWidth()

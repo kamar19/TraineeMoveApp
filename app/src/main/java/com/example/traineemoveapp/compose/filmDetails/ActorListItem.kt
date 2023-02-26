@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -52,9 +51,6 @@ fun ActorImage(
         modifier: Modifier = Modifier,
         alignment: Alignment = Alignment.Center,
         contentScale: ContentScale = ContentScale.Fit,
-        alpha: Float = DefaultAlpha,
-        colorFilter: ColorFilter? = null,
-        requestBuilderTransform: RequestBuilderTransform<Drawable> = { it },
 ) {
     if (LocalInspectionMode.current) {
         Box(modifier = modifier.background(Color.Magenta))

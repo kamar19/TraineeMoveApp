@@ -30,7 +30,7 @@ fun ImageListItem(name: String, idImage: Int, descriptionText: String, raiting: 
             .padding(horizontal = dimensionResource(id = R.dimen.card_side_margin))
             .padding(top = dimensionResource(id = R.dimen.card_bottom_margin), bottom = dimensionResource(id = R.dimen.card_bottom_margin))) {
         Column(Modifier.fillMaxWidth()) {
-            FilmImage(model = idImage, contentDescription = stringResource(R.string.a11y_film_item_image), Modifier
+            FilmImage(model = idImage, Modifier
                     .fillMaxWidth()
                     .height(dimensionResource(id = R.dimen.flim_list_item_image_height)), contentScale = ContentScale.Crop)
             Text(text = name, fontWeight = FontWeight.Bold, fontSize = 14.sp, textAlign = TextAlign.Start,  maxLines = 2, modifier = Modifier

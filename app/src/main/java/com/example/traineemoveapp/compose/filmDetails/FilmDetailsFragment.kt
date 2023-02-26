@@ -73,7 +73,7 @@ import com.example.traineemoveapp.viewModel.DetailFilmViewModel
                         ActorsListView(viewModel, film.actor_ids)
         }
             ) {
-                FilmImageDetails(model = viewModel.getImage(idFilm), contentDescription = stringResource(com.example.traineemoveapp.R.string.a11y_film_item_image))
+                FilmImageDetails(model = viewModel.getImage(idFilm))
             }
         }
     }
@@ -99,7 +99,6 @@ import com.example.traineemoveapp.viewModel.DetailFilmViewModel
 
 @Composable fun FilmImageDetails(
         model: Any?,
-        contentDescription: String?,
         modifier: Modifier = Modifier,
         alignment: Alignment = Alignment.Center,
         contentScale: ContentScale = ContentScale.Fit,

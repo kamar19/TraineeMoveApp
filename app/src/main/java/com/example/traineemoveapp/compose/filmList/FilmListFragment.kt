@@ -32,17 +32,17 @@ import com.example.traineemoveapp.viewModel.MainActivityViewModel
 @Composable fun FilmListFragment(modifier: Modifier = Modifier, viewModel: MainActivityViewModel, titleText:String , onClickToDetailScreen: (Int) -> Unit = {},  onClickToSelectCategory: (Int) -> Unit = {}, onInputText: (String) -> Unit = {} ) {
         Column(
                 modifier = modifier,
-                verticalArrangement = Arrangement.SpaceAround,
+                verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
         ) {
             SearchField(viewModel, onInputText)
             Text(text = titleText, fontWeight = FontWeight.Bold, textAlign = TextAlign.Start,  fontSize = 16.sp, maxLines = 2, modifier = Modifier
                     .fillMaxWidth()
-                    .padding( vertical = 10.dp, horizontal = 20.dp)
+                    .padding( vertical = 10.dp, horizontal = 15.dp)
             )
             CategoryFilmsView(viewModel, onClickToSelectCategory)
             FilmListGrid(
-                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.margin_normal)),
+                    modifier = Modifier.padding(  horizontal = dimensionResource(id = R.dimen.margin_normal)),
                     onClickToDetailScreen = onClickToDetailScreen,
                     viewModel = viewModel,
             )

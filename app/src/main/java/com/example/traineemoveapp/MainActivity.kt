@@ -35,7 +35,6 @@ class MainActivity : ComponentActivity() {
             const val DETAIL_FILM = "DETAIL_FILM"
             const val FILM_ID = "FILM_ID"
             const val COUNT_ROWS = 2
-            const val DETAIL_CARD_HEIGHT = 400
             const val DETAIL_IMAGE_HEIGHT = 230
             const val DETAIL_IMAGE_WIDTH = 170
             const val ACTOR_IMAGE_HEIGHT = 196
