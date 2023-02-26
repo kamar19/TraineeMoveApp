@@ -6,11 +6,12 @@ import com.example.traineemoveapp.R
 import com.example.traineemoveapp.model.Film
 import com.example.traineemoveapp.model.Genre
 import com.example.traineemoveapp.repository.FilmRepository
+import com.example.traineemoveapp.repository.GenreRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class MainActivityViewModel(private val filmRepository: FilmRepository) : ViewModel() {
-    private val genres = initGenres()
+class MainActivityViewModel(val filmRepository: FilmRepository, val genreRepository: GenreRepository) : ViewModel() {
+//    private val genres = genreRepository.getAllGenre()
     private val selectedGenres: MutableList<Int> = mutableListOf()
     var allFilms: MutableList<Film> = mutableListOf()
 
@@ -78,22 +79,7 @@ class MainActivityViewModel(private val filmRepository: FilmRepository) : ViewMo
         }
     }
     fun getAllGenres(): MutableList<Genre> {
-        return genres
-    }
-
-    fun getGenre(idGenres: Int): Genre? {
-        return genres.findLast { it.id == idGenres }
-    }
-
-    private fun initGenres(): MutableList<Genre> {
-        val genres: MutableList<Genre> = arrayListOf()
-        genres.add(Genre(1, "боевики"))
-        genres.add(Genre(2,"драмы"))
-        genres.add(Genre(3,"комедии"))
-        genres.add(Genre(4,"артхауз"))
-        genres.add(Genre(5,"мелодрамы"))
-        genres.add(Genre(6,"драмы"))
-        return genres
+        return genreRepository.getAllGenre()
     }
 
 }

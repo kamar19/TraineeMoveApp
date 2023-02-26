@@ -135,7 +135,7 @@ fun CategoryFilmsView(viewModel:MainActivityViewModel, onClickToSelectCategory: 
                 modifier = Modifier
                         .padding(end = 6.dp),
                 border = BorderStroke(width = 1.dp, color = MaterialTheme.colors.onSecondary),
-                colors = ChipDefaults.chipColors(backgroundColor = if (isSelected) Color.LightGray else Color.Transparent, disabledBackgroundColor =  Color.Blue,disabledLeadingIconContentColor = Color.Red, leadingIconContentColor  = Color.Red)
+                colors = ChipDefaults.chipColors(backgroundColor = if (isSelected) Color.LightGray else Color.Transparent)
         ) {
             Text(text = item.name)
         }

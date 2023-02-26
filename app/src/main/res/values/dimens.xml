@@ -4,7 +4,7 @@
     <dimen name="margin_small">8dp</dimen>
     <dimen name="margin_extra_small">4dp</dimen>
 
-    <dimen name="flim_list_item_image_height">95dp</dimen>
+    <dimen name="flim_list_item_image_height">125dp</dimen>
     <dimen name="card_side_margin">15dp</dimen>
     <dimen name="card_bottom_margin">5dp</dimen>
     <dimen name="card_elevation">0dp</dimen>
