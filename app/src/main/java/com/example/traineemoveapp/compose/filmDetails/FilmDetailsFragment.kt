@@ -1,5 +1,6 @@
 package com.example.traineemoveapp.compose.filmDetails
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -27,16 +28,18 @@ import com.example.traineemoveapp.compose.filmList.AgeRatingComponent
 import com.example.traineemoveapp.compose.filmList.RatingBar
 import com.example.traineemoveapp.model.Genre
 import com.example.traineemoveapp.viewModel.DetailFilmViewModel
+import kotlinx.coroutines.flow.StateFlow
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable fun FilmDetailsFragment(
         modifier: Modifier = Modifier,
         viewModel: DetailFilmViewModel,
         idFilm: Int,
 ) {
-    val film = viewModel.film
+    val film = viewModel.uiState.value.film
     val configuration = LocalConfiguration.current
-    film?.let {
+    film.let {
             BottomSheetScaffold(
                     sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 16.dp),
                     sheetPeekHeight = configuration.screenHeightDp.dp - (configuration.screenHeightDp.dp / 3),
@@ -70,7 +73,7 @@ import com.example.traineemoveapp.viewModel.DetailFilmViewModel
                         Text(text = stringResource(R.string.artist_title_text), fontSize = 22.sp, textAlign = TextAlign.Start, maxLines = 1,  modifier = Modifier
                                 .padding(10.dp)
                                 .align(Alignment.Start))
-                        ActorsListView(viewModel, film.actor_ids)
+                        ActorsListView(viewModel, viewModel.uiState )
         }
             ) {
                 FilmImageDetails(model = viewModel.getImage(idFilm))
@@ -108,9 +111,9 @@ import com.example.traineemoveapp.viewModel.DetailFilmViewModel
             .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)))
 }
 
-@Composable fun ActorsListView(viewModel: DetailFilmViewModel, actor_ids: List<Int>) {
+@Composable fun ActorsListView(viewModel: DetailFilmViewModel, state: StateFlow<DetailFilmViewModel.ViewModelDetailState>) {
     LazyRow(contentPadding = PaddingValues(start = 20.dp)) {
-        val actors = viewModel.getFilmActors(actor_ids as MutableList<Int>)
+        val actors = viewModel.getFilmActors(state.value.film.actor_ids as MutableList<Int>)
         items(items = actors) { actor ->
             actor.let {
                 ActorListItem(viewModel, actor = it)

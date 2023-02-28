@@ -13,8 +13,6 @@ import com.example.traineemoveapp.MainActivity.Companion.LIST_FILMS
 import com.example.traineemoveapp.R
 import com.example.traineemoveapp.compose.filmDetails.FilmDetailsFragment
 import com.example.traineemoveapp.compose.filmList.FilmListFragment
-import com.example.traineemoveapp.model.Film
-import com.example.traineemoveapp.repository.FilmRepository
 import com.example.traineemoveapp.viewModel.DetailFilmViewModel
 import com.example.traineemoveapp.viewModel.MainActivityViewModel
 
@@ -38,10 +36,8 @@ sealed class NavRoute(val route: String) {
                 genreId ->
                 run {
                     viewModel.updateSelectedGenres(genreId)
-                    viewModel.changeFilms(viewModel.allFilms.filter { it.genre_ids.containsAll(viewModel.getSelectedGenres()) &&  it.name.contains(viewModel.uiInputState.value.searchText, true) } as MutableList<Film>)
+                    viewModel.findFilms()
                 }
-            }, onInputText = { newText ->
-                viewModel.findFilmsByText(newText)
             }, viewModel = viewModel)
         }
         composable(route = NavRoute.DetailsRoute.route, arguments = listOf(navArgument(FILM_ID) {

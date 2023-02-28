@@ -25,13 +25,11 @@ class MainActivityViewModel(val filmRepository: FilmRepository) : ViewModel() {
         startValue()
     }
 
-    fun findFilmsByText(newText:String){
-        if (newText.length > 0) {
-            changeSearchText(newText)
-            changeFilms(allFilms.filter { it.name.contains(uiInputState.value.searchText, true) } as MutableList<Film>)
+    fun findFilms(){
+        if (uiInputState.value.searchText.length > 0) {
+            changeFilms(allFilms.filter { it.genre_ids.containsAll(getSelectedGenres()) &&  it.name.contains(uiInputState.value.searchText, true) } as MutableList<Film>)
         } else {
-            changeSearchText("")
-            changeFilms(allFilms)
+            changeFilms(allFilms.filter { it.genre_ids.containsAll(getSelectedGenres())} as MutableList<Film>)
         }
     }
 

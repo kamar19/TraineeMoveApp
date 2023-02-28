@@ -37,8 +37,8 @@ class MainActivity : ComponentActivity() {
             const val COUNT_ROWS = 2
             const val DETAIL_IMAGE_HEIGHT = 230
             const val DETAIL_IMAGE_WIDTH = 170
-            const val ACTOR_IMAGE_HEIGHT = 196
-            const val ACTOR_IMAGE_WIDTH = 150
+            const val ACTOR_CARD_HEIGHT = 270
+            const val ACTOR_CARD_WIDTH = 150
             const val TITLE_TEXT_MAX_LINES = 2
             const val DETAIL_TEXT_MAX_LINES = 8
             const val ASSET_FILE_NAME = "data.json"

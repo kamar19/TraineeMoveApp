@@ -29,13 +29,13 @@ import com.example.traineemoveapp.R
 import com.example.traineemoveapp.model.Genre
 import com.example.traineemoveapp.viewModel.MainActivityViewModel
 
-@Composable fun FilmListFragment(modifier: Modifier = Modifier, viewModel: MainActivityViewModel, titleText:String , onClickToDetailScreen: (Int) -> Unit = {},  onClickToSelectCategory: (Int) -> Unit = {}, onInputText: (String) -> Unit = {} ) {
+@Composable fun FilmListFragment(modifier: Modifier = Modifier, viewModel: MainActivityViewModel, titleText:String , onClickToDetailScreen: (Int) -> Unit = {},  onClickToSelectCategory: (Int) -> Unit = {}) {
         Column(
                 modifier = modifier,
                 verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SearchField(viewModel, onInputText)
+            SearchField(viewModel)
             Text(text = titleText, fontWeight = FontWeight.Bold, textAlign = TextAlign.Start,  fontSize = 16.sp, maxLines = 2, modifier = Modifier
                     .fillMaxWidth()
                     .padding( vertical = 10.dp, horizontal = 15.dp)
@@ -50,7 +50,7 @@ import com.example.traineemoveapp.viewModel.MainActivityViewModel
 }
 
 @SuppressLint("StateFlowValueCalledInComposition") @Composable
-private fun SearchField(viewModel:MainActivityViewModel, onInputText: (String) -> Unit = {} )
+private fun SearchField(viewModel:MainActivityViewModel )
  {
      val text = remember {
          mutableStateOf("")
@@ -61,7 +61,8 @@ private fun SearchField(viewModel:MainActivityViewModel, onInputText: (String) -
                     .height(55.dp),
             onValueChange = {
                 text.value = it
-                onInputText(text.value)
+                viewModel.changeSearchText(text.value)
+                viewModel.findFilms()
             },
             value = text.value,
             textStyle = TextStyle(color = Color.Black, fontSize = 13.sp),
@@ -127,11 +128,8 @@ fun CategoryFilmsView(viewModel:MainActivityViewModel, onClickToSelectCategory: 
 
     @OptIn(ExperimentalMaterialApi::class) @Composable
     fun GenresChip(item: Genre, isSelected:Boolean, onClickToSelectCategory: () -> Unit = {}) {
-        val onClickToSelectCategory2: () -> Unit = {
-            onClickToSelectCategory()
-        }
         Chip(
-                onClick = onClickToSelectCategory2,
+                onClick = onClickToSelectCategory,
                 modifier = Modifier
                         .padding(end = 6.dp),
                 border = BorderStroke(width = 1.dp, color = MaterialTheme.colors.onSecondary),
