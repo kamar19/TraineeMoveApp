@@ -17,8 +17,16 @@ class MainActivityViewModel(val filmRepository: FilmRepository) : ViewModel() {
     private val _uiInputState = MutableStateFlow(ViewModelInputState(""))
     val uiInputState: StateFlow<ViewModelInputState> get() = _uiInputState.asStateFlow()
 
-    data class ViewModelListState(val films: MutableList<Film> = mutableListOf())
-    private val _uiState = MutableStateFlow(ViewModelListState())
+//    data class ViewModelListState(val films: MutableList<Film> = mutableListOf())
+
+    sealed class ViewModelListState {
+        object Loading : ViewModelListState()
+        data class Success(val listFilm: List<Film>) : ViewModelListState()
+        data class Error(val error: String) : ViewModelListState()
+    }
+
+
+    private val _uiState = MutableStateFlow<ViewModelListState>(ViewModelListState.Loading)
     val uiState: StateFlow<ViewModelListState> get() = _uiState.asStateFlow()
 
     init {
@@ -56,13 +64,13 @@ class MainActivityViewModel(val filmRepository: FilmRepository) : ViewModel() {
 
     fun changeFilms(newfilms: MutableList<Film>) {
         viewModelScope.launch {
-            _uiState.emit(ViewModelListState(newfilms))
+            _uiState.emit(ViewModelListState.Success(newfilms))
         }
     }
 
     fun startValue() {
         allFilms = filmRepository.getAllFils()
-        _uiState.value = ViewModelListState(films =  allFilms)
+        _uiState.value = ViewModelListState.Success(allFilms)
     }
 
     fun getImage(idImage: Int): Int {

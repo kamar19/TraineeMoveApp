@@ -43,5 +43,10 @@ class MainActivity : ComponentActivity() {
             const val DETAIL_TEXT_MAX_LINES = 8
             const val ASSET_FILE_NAME = "data.json"
             const val ASSET_FILE_NAME_ACTOR = "people.json"
+
+
+            val BASE_URL = "https://api.themoviedb.org/3/"
+            val apiKey = "f1eaa713b8b88ceef63a9cd8be1f7920"
+            val BASE_URL_MOVIES = "https://image.tmdb.org/t/p/original"
     }
 }

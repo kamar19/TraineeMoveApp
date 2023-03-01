@@ -26,27 +26,44 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.traineemoveapp.MainActivity.Companion.COUNT_ROWS
 import com.example.traineemoveapp.R
+import com.example.traineemoveapp.model.Film
 import com.example.traineemoveapp.model.Genre
 import com.example.traineemoveapp.viewModel.MainActivityViewModel
 
 @Composable fun FilmListFragment(modifier: Modifier = Modifier, viewModel: MainActivityViewModel, titleText:String , onClickToDetailScreen: (Int) -> Unit = {},  onClickToSelectCategory: (Int) -> Unit = {}) {
-        Column(
+
+    val state = viewModel.uiState.collectAsState()
+
+    when (state.value) {
+        is MainActivityViewModel.ViewModelListState.Loading -> {}
+        is MainActivityViewModel.ViewModelListState.Error -> {}
+        is MainActivityViewModel.ViewModelListState.Success -> {
+            Column(
                 modifier = modifier,
                 verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            SearchField(viewModel)
-            Text(text = titleText, fontWeight = FontWeight.Bold, textAlign = TextAlign.Start,  fontSize = 16.sp, maxLines = 2, modifier = Modifier
-                    .fillMaxWidth()
-                    .padding( vertical = 10.dp, horizontal = 15.dp)
-            )
-            CategoryFilmsView(viewModel, onClickToSelectCategory)
-            FilmListGrid(
-                    modifier = Modifier.padding(  horizontal = dimensionResource(id = R.dimen.margin_normal)),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                SearchField(viewModel)
+                Text(
+                    text = titleText,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Start,
+                    fontSize = 16.sp,
+                    maxLines = 2,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp, horizontal = 15.dp)
+                )
+                CategoryFilmsView(viewModel, onClickToSelectCategory)
+                FilmListGrid(
+                    films =  (state.value as MainActivityViewModel.ViewModelListState.Success).listFilm,
+                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.margin_normal)),
                     onClickToDetailScreen = onClickToDetailScreen,
                     viewModel = viewModel,
-            )
+                )
+            }
         }
+    }
 }
 
 @SuppressLint("StateFlowValueCalledInComposition") @Composable
@@ -88,18 +105,18 @@ private fun SearchField(viewModel:MainActivityViewModel )
 }
 
 @Composable fun FilmListGrid(
+        films: List<Film>,
         modifier: Modifier = Modifier,
         viewModel: MainActivityViewModel,
         onClickToDetailScreen: (Int) -> Unit = {},
 ) {
-    val myItems by viewModel.uiState.collectAsState()
     LazyVerticalGrid(
             columns = GridCells.Fixed(COUNT_ROWS),
             horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.film_item_horizontal)),
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.film_item_vertical)),
     ) {
         items(
-                items = myItems.films,
+                items = films,
         ) { film ->
             FilmListItem(film = film, viewModel.getImage(film.id_photo)) {
                 film.id?.let { onClickToDetailScreen(it) }
