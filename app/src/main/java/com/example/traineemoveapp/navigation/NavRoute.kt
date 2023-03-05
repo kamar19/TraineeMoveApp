@@ -1,5 +1,6 @@
 package com.example.traineemoveapp.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavType
@@ -19,7 +20,7 @@ import com.example.traineemoveapp.viewModel.MainActivityViewModel
 sealed class NavRoute(val route: String) {
     object FilmListRoute : NavRoute(LIST_FILMS)
     object DetailsRoute : NavRoute("$DETAIL_FILM/{$FILM_ID}") {
-        fun createRoute(filmId: Int) = "$DETAIL_FILM/$filmId"
+        fun createRoute(filmId: Long) = "$DETAIL_FILM/$filmId"
     }
 }
 
@@ -41,11 +42,12 @@ sealed class NavRoute(val route: String) {
             }, viewModel = viewModel)
         }
         composable(route = NavRoute.DetailsRoute.route, arguments = listOf(navArgument(FILM_ID) {
-            type = NavType.IntType
+            type = NavType.LongType
         })) { backStackEntry ->
-            val filmId = backStackEntry.arguments?.getInt(FILM_ID)
+            val filmId = backStackEntry.arguments?.getLong(FILM_ID)
             requireNotNull(filmId) { "gamesId parameter wasn't found. Please make sure it's set!" }
             val viewModelDetail = DetailFilmViewModel(viewModel.filmRepository, filmId)
+            Log.v("test_log","FilmDetailsFragmen - filmId = " + filmId.toString())
             FilmDetailsFragment(viewModel = viewModelDetail, idFilm = filmId )
         }
     }

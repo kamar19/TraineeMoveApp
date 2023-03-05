@@ -6,7 +6,7 @@ import com.example.traineemoveapp.model.Genre
 
 interface FilmRepository {
     fun getAllFils(): MutableList<Film>
-    fun getFilm(id: Int): Film?
+    fun getFilm(id: Long): Film?
     fun getAllGenre(): MutableList<Genre>
     fun getGenre(id: Int): Genre?
     fun getAllActor(): MutableList<Actor>

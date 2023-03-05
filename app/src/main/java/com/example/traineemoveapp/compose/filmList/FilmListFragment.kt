@@ -29,15 +29,18 @@ import com.example.traineemoveapp.R
 import com.example.traineemoveapp.model.Film
 import com.example.traineemoveapp.model.Genre
 import com.example.traineemoveapp.viewModel.MainActivityViewModel
+import com.example.traineemoveapp.viewModel.ViewModelGenresListState
+import com.example.traineemoveapp.viewModel.ViewModelListState
 
-@Composable fun FilmListFragment(modifier: Modifier = Modifier, viewModel: MainActivityViewModel, titleText:String , onClickToDetailScreen: (Int) -> Unit = {},  onClickToSelectCategory: (Int) -> Unit = {}) {
+@Composable fun FilmListFragment(modifier: Modifier = Modifier, viewModel: MainActivityViewModel, titleText:String , onClickToDetailScreen: (Long) -> Unit = {},  onClickToSelectCategory: (Int) -> Unit = {}) {
 
     val state = viewModel.uiState.collectAsState()
+    val stateGenre = viewModel.uiGenresState.collectAsState()
 
     when (state.value) {
-        is MainActivityViewModel.ViewModelListState.Loading -> {}
-        is MainActivityViewModel.ViewModelListState.Error -> {}
-        is MainActivityViewModel.ViewModelListState.Success -> {
+        is ViewModelListState.Loading -> {}
+        is ViewModelListState.Error -> {}
+        is ViewModelListState.Success -> {
             Column(
                 modifier = modifier,
                 verticalArrangement = Arrangement.Center,
@@ -54,9 +57,9 @@ import com.example.traineemoveapp.viewModel.MainActivityViewModel
                         .fillMaxWidth()
                         .padding(vertical = 10.dp, horizontal = 15.dp)
                 )
-                CategoryFilmsView(viewModel, onClickToSelectCategory)
+                CategoryFilmsView(viewModel, genres =  (stateGenre.value as ViewModelGenresListState.Success).genresList,  onClickToSelectCategory)
                 FilmListGrid(
-                    films =  (state.value as MainActivityViewModel.ViewModelListState.Success).listFilm,
+                    films =  (state.value as ViewModelListState.Success).listFilm,
                     modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.margin_normal)),
                     onClickToDetailScreen = onClickToDetailScreen,
                     viewModel = viewModel,
@@ -108,7 +111,7 @@ private fun SearchField(viewModel:MainActivityViewModel )
         films: List<Film>,
         modifier: Modifier = Modifier,
         viewModel: MainActivityViewModel,
-        onClickToDetailScreen: (Int) -> Unit = {},
+        onClickToDetailScreen: (Long) -> Unit = {},
 ) {
     LazyVerticalGrid(
             columns = GridCells.Fixed(COUNT_ROWS),
@@ -118,7 +121,7 @@ private fun SearchField(viewModel:MainActivityViewModel )
         items(
                 items = films,
         ) { film ->
-            FilmListItem(film = film, viewModel.getImage(film.id_photo)) {
+            FilmListItem(film = film) {
                 film.id?.let { onClickToDetailScreen(it) }
             }
         }
@@ -126,9 +129,9 @@ private fun SearchField(viewModel:MainActivityViewModel )
 }
 
 @Composable
-fun CategoryFilmsView(viewModel:MainActivityViewModel, onClickToSelectCategory: (Int) -> Unit = {} ) {
+fun CategoryFilmsView(viewModel:MainActivityViewModel, genres: MutableList<Genre>, onClickToSelectCategory: (Int) -> Unit = {} ) {
     LazyRow(contentPadding = PaddingValues(start = 20.dp)) {
-        items(items = viewModel.getAllGenres()) {
+        items(items = genres) {
             category ->
             category.id?.let {
                 val textChipRememberOneState = remember {

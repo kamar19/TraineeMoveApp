@@ -1,14 +1,16 @@
 package com.example.traineemoveapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.ui.Modifier
-import com.example.traineemoveapp.ui.theme.TraineeMoveAppTheme
+import com.example.traineemoveapp.data.remote.RemoteDataSource
 import com.example.traineemoveapp.navigation.FilmAppScreen
-import com.example.traineemoveapp.repository.FromJsonRepository
+import com.example.traineemoveapp.ui.theme.TraineeMoveAppTheme
+import com.example.traineemoveapp.repository.RemoteRepository
 import com.example.traineemoveapp.viewModel.MainActivityViewModel
 import com.google.gson.Gson
 
@@ -17,9 +19,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val gson = Gson()
-        val filmRepository = FromJsonRepository(this, gson)
+//        val filmRepository = FromJsonRepository(this, gson)
+        val filmRepository = RemoteRepository(RemoteDataSource())
+        Log.v("test_log","MainActivity - onCreate 00")
 
         val viewModel = MainActivityViewModel(filmRepository)
+        Log.v("test_log","MainActivity - onCreate 01")
 
         setContent {
             TraineeMoveAppTheme {
@@ -28,6 +33,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        Log.v("test_log","MainActivity - onCreate 03")
+
     }
 
     companion object {
@@ -48,5 +55,6 @@ class MainActivity : ComponentActivity() {
             val BASE_URL = "https://api.themoviedb.org/3/"
             val apiKey = "f1eaa713b8b88ceef63a9cd8be1f7920"
             val BASE_URL_MOVIES = "https://image.tmdb.org/t/p/original"
+            val SEARCH_PRINCIPLE = "now_playing"
     }
 }

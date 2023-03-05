@@ -18,11 +18,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.example.traineemoveapp.MainActivity.Companion.DETAIL_IMAGE_HEIGHT
 import com.example.traineemoveapp.MainActivity.Companion.DETAIL_IMAGE_WIDTH
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun FilmImage(
         model: Any?,
@@ -37,10 +41,20 @@ fun FilmImage(
         Box(modifier = modifier.background(Color.Magenta))
         return
     }
-    Image(painter = painterResource(id = model as Int), contentDescription = null, alignment = Alignment.TopStart, contentScale = ContentScale.Crop, modifier = Modifier
+
+    GlideImage(
+        model = model,
+        contentDescription = null,
+        modifier = Modifier
             .height(DETAIL_IMAGE_HEIGHT.dp)
             .width(DETAIL_IMAGE_WIDTH.dp)
             .fillMaxWidth()
-            .clip(RoundedCornerShape(5)))
-
+            .clip(RoundedCornerShape(5))
+        ,
+        alignment = alignment,
+        contentScale = contentScale,
+        alpha = alpha,
+        colorFilter = colorFilter,
+        requestBuilderTransform = requestBuilderTransform
+    )
 }
