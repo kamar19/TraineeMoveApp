@@ -8,7 +8,10 @@ data class Film(
         var name: String = "",
         var id_photo: Int = -1,
         var date_publication: String = "",
-        var rating: Int = 0,
-        var description: String = ""
+        var rating: Float = 0.0F,
+        var description: String = "",
+        var pg: String = "",
+        var genre_ids:List<Int>,
+        var actor_ids:List<Int>
 )
 

@@ -1,7 +1,7 @@
 package com.example.traineemoveapp.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,9 +10,11 @@ import androidx.navigation.navArgument
 import com.example.traineemoveapp.MainActivity.Companion.DETAIL_FILM
 import com.example.traineemoveapp.MainActivity.Companion.FILM_ID
 import com.example.traineemoveapp.MainActivity.Companion.LIST_FILMS
+import com.example.traineemoveapp.R
 import com.example.traineemoveapp.compose.filmDetails.FilmDetailsFragment
 import com.example.traineemoveapp.compose.filmList.FilmListFragment
-import com.example.traineemoveapp.repository.FilmRepository
+import com.example.traineemoveapp.viewModel.DetailFilmViewModel
+import com.example.traineemoveapp.viewModel.MainActivityViewModel
 
 sealed class NavRoute(val route: String) {
     object FilmListRoute : NavRoute(LIST_FILMS)
@@ -21,7 +23,7 @@ sealed class NavRoute(val route: String) {
     }
 }
 
-@Composable fun FilmAppScreen(filmRepositoryImpl: FilmRepository) {
+@Composable fun FilmAppScreen(viewModel: MainActivityViewModel) {
     val navController = rememberNavController()
     NavHost(
             navController = navController,
@@ -30,15 +32,21 @@ sealed class NavRoute(val route: String) {
         composable(route = NavRoute.FilmListRoute.route) {
             FilmListFragment(onClickToDetailScreen = { filmId ->
                 navController.navigate(NavRoute.DetailsRoute.createRoute(filmId))
-            }, filmRepositoryImpl = filmRepositoryImpl)
+            }, titleText = stringResource(R.string.title_text) , onClickToSelectCategory = {
+                genreId ->
+                run {
+                    viewModel.updateSelectedGenres(genreId)
+                    viewModel.findFilms()
+                }
+            }, viewModel = viewModel)
         }
         composable(route = NavRoute.DetailsRoute.route, arguments = listOf(navArgument(FILM_ID) {
             type = NavType.IntType
         })) { backStackEntry ->
             val filmId = backStackEntry.arguments?.getInt(FILM_ID)
-            Log.v("test_log","filmId = " + filmId.toString() )
             requireNotNull(filmId) { "gamesId parameter wasn't found. Please make sure it's set!" }
-            FilmDetailsFragment(filmRepository = filmRepositoryImpl, idFilm = filmId )
+            val viewModelDetail = DetailFilmViewModel(viewModel.filmRepository, filmId)
+            FilmDetailsFragment(viewModel = viewModelDetail, idFilm = filmId )
         }
     }
 }
