@@ -8,13 +8,12 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import retrofit2.converter.gson.GsonConverterFactory
 
 interface MoviesHttpClient {
     val moviesApi: MoviesApiService
 }
 
-class MoviesHttpClientImpl: MoviesHttpClient {
+class MoviesHttpClientImpl : MoviesHttpClient {
     private val client = OkHttpClient
         .Builder()
         .addInterceptor(Interceptor())
@@ -30,9 +29,7 @@ class MoviesHttpClientImpl: MoviesHttpClient {
         .Builder()
         .client(client)
         .baseUrl(BASE_URL)
-//        .addConverterFactory(GsonConverterFactory.create())
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
-
-        override val moviesApi: MoviesApiService = this.retrofit.create(MoviesApiService::class.java)
+    override val moviesApi: MoviesApiService = this.retrofit.create(MoviesApiService::class.java)
 }

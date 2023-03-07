@@ -1,7 +1,6 @@
 package com.example.traineemoveapp
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -12,20 +11,13 @@ import com.example.traineemoveapp.navigation.FilmAppScreen
 import com.example.traineemoveapp.ui.theme.TraineeMoveAppTheme
 import com.example.traineemoveapp.repository.RemoteRepository
 import com.example.traineemoveapp.viewModel.MainActivityViewModel
-import com.google.gson.Gson
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val gson = Gson()
-//        val filmRepository = FromJsonRepository(this, gson)
         val filmRepository = RemoteRepository(RemoteDataSource())
-        Log.v("test_log","MainActivity - onCreate 00")
-
         val viewModel = MainActivityViewModel(filmRepository)
-        Log.v("test_log","MainActivity - onCreate 01")
-
         setContent {
             TraineeMoveAppTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
@@ -33,8 +25,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        Log.v("test_log","MainActivity - onCreate 03")
-
     }
 
     companion object {
@@ -42,19 +32,11 @@ class MainActivity : ComponentActivity() {
             const val DETAIL_FILM = "DETAIL_FILM"
             const val FILM_ID = "FILM_ID"
             const val COUNT_ROWS = 2
-            const val DETAIL_IMAGE_HEIGHT = 230
-            const val DETAIL_IMAGE_WIDTH = 170
-            const val ACTOR_CARD_HEIGHT = 270
-            const val ACTOR_CARD_WIDTH = 150
             const val TITLE_TEXT_MAX_LINES = 2
             const val DETAIL_TEXT_MAX_LINES = 8
-            const val ASSET_FILE_NAME = "data.json"
-            const val ASSET_FILE_NAME_ACTOR = "people.json"
-
-
-            val BASE_URL = "https://api.themoviedb.org/3/"
-            val apiKey = "f1eaa713b8b88ceef63a9cd8be1f7920"
-            val BASE_URL_MOVIES = "https://image.tmdb.org/t/p/original"
-            val SEARCH_PRINCIPLE = "now_playing"
+            const val BASE_URL = "https://api.themoviedb.org/3/"
+            const val apiKey = "f1eaa713b8b88ceef63a9cd8be1f7920"
+            const val BASE_URL_MOVIES = "https://image.tmdb.org/t/p/original"
+            const val SEARCH_PRINCIPLE = "now_playing"
     }
 }

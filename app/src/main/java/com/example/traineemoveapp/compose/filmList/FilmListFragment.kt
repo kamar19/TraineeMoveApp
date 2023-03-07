@@ -29,13 +29,26 @@ import com.example.traineemoveapp.R
 import com.example.traineemoveapp.model.Film
 import com.example.traineemoveapp.model.Genre
 import com.example.traineemoveapp.viewModel.MainActivityViewModel
-import com.example.traineemoveapp.viewModel.ViewModelGenresListState
-import com.example.traineemoveapp.viewModel.ViewModelListState
+import com.example.traineemoveapp.viewModel.states.ViewModelGenresListState
+import com.example.traineemoveapp.viewModel.states.ViewModelListState
 
-@Composable fun FilmListFragment(modifier: Modifier = Modifier, viewModel: MainActivityViewModel, titleText:String , onClickToDetailScreen: (Long) -> Unit = {},  onClickToSelectCategory: (Int) -> Unit = {}) {
-
-    val state = viewModel.uiState.collectAsState()
+@Composable
+fun FilmListFragment(modifier: Modifier = Modifier,
+                     viewModel: MainActivityViewModel,
+                     titleText: String,
+                     onClickToDetailScreen: (Long) -> Unit = {},
+                     onClickToSelectCategory: (Int) -> Unit = {}
+) {
+    val state = viewModel.uiFilmsState.collectAsState()
     val stateGenre = viewModel.uiGenresState.collectAsState()
+    val stateError = viewModel.errorState.collectAsState()
+
+    val genres : List<Genre>
+    if  (stateGenre.value is ViewModelGenresListState.Success) {
+        genres = (stateGenre.value as ViewModelGenresListState.Success).genresList
+    } else {
+        genres = arrayListOf()
+    }
 
     when (state.value) {
         is ViewModelListState.Loading -> {}
@@ -57,9 +70,13 @@ import com.example.traineemoveapp.viewModel.ViewModelListState
                         .fillMaxWidth()
                         .padding(vertical = 10.dp, horizontal = 15.dp)
                 )
-                CategoryFilmsView(viewModel, genres =  (stateGenre.value as ViewModelGenresListState.Success).genresList,  onClickToSelectCategory)
+                CategoryFilmsView(
+                    viewModel,
+                    genres = genres,
+                    onClickToSelectCategory
+                )
                 FilmListGrid(
-                    films =  (state.value as ViewModelListState.Success).listFilm,
+                    films = (state.value as ViewModelListState.Success) .listFilm,
                     modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.margin_normal)),
                     onClickToDetailScreen = onClickToDetailScreen,
                     viewModel = viewModel,
@@ -69,57 +86,60 @@ import com.example.traineemoveapp.viewModel.ViewModelListState
     }
 }
 
-@SuppressLint("StateFlowValueCalledInComposition") @Composable
-private fun SearchField(viewModel:MainActivityViewModel )
- {
-     val text = remember {
-         mutableStateOf("")
-     }
-    TextField(
-            modifier = Modifier
-                    .fillMaxWidth()
-                    .height(55.dp),
-            onValueChange = {
-                text.value = it
-                viewModel.changeSearchText(text.value)
-                viewModel.findFilms()
-            },
-            value = text.value,
-            textStyle = TextStyle(color = Color.Black, fontSize = 13.sp),
-            trailingIcon = {
-                Icon(Icons.Default.Search,
-                        contentDescription = stringResource(R.string.search_text),
-                        modifier = Modifier
-                                .padding(20.dp, 10.dp)
-                                .size(20.dp)
-                )
-            },
-            keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    capitalization = KeyboardCapitalization.None,
-                    autoCorrect = false,
-                    imeAction = ImeAction.Search,),
-            colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent)
+@SuppressLint("StateFlowValueCalledInComposition")
+@Composable
+private fun SearchField(viewModel: MainActivityViewModel) {
+    val text = remember {
+        mutableStateOf("")
+    }
+    TextField(modifier = Modifier
+        .fillMaxWidth()
+        .height(55.dp),
+        onValueChange = {
+            text.value = it
+            viewModel.changeSearchText(text.value)
+            viewModel.findFilms()
+        },
+        value = text.value,
+        textStyle = TextStyle(color = Color.Black, fontSize = 13.sp),
+        trailingIcon = {
+            Icon(
+                Icons.Default.Search,
+                contentDescription = stringResource(R.string.search_text),
+                modifier = Modifier
+                    .padding(20.dp, 10.dp)
+                    .size(20.dp)
+            )
+        },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Text,
+            capitalization = KeyboardCapitalization.None,
+            autoCorrect = false,
+            imeAction = ImeAction.Search,
+        ),
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = Color.White,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
+        )
     )
 }
 
-@Composable fun FilmListGrid(
+@Composable
+fun FilmListGrid(
         films: List<Film>,
         modifier: Modifier = Modifier,
         viewModel: MainActivityViewModel,
         onClickToDetailScreen: (Long) -> Unit = {},
 ) {
     LazyVerticalGrid(
-            columns = GridCells.Fixed(COUNT_ROWS),
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.film_item_horizontal)),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.film_item_vertical)),
+        columns = GridCells.Fixed(COUNT_ROWS),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.film_item_horizontal)),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.film_item_vertical)),
     ) {
         items(
-                items = films,
+            items = films,
         ) { film ->
             FilmListItem(film = film) {
                 film.id?.let { onClickToDetailScreen(it) }
@@ -129,15 +149,17 @@ private fun SearchField(viewModel:MainActivityViewModel )
 }
 
 @Composable
-fun CategoryFilmsView(viewModel:MainActivityViewModel, genres: MutableList<Genre>, onClickToSelectCategory: (Int) -> Unit = {} ) {
+fun CategoryFilmsView(viewModel: MainActivityViewModel,
+                      genres: List<Genre>,
+                      onClickToSelectCategory: (Int) -> Unit = {}
+) {
     LazyRow(contentPadding = PaddingValues(start = 20.dp)) {
-        items(items = genres) {
-            category ->
+        items(items = genres) { category ->
             category.id?.let {
                 val textChipRememberOneState = remember {
                     mutableStateOf(viewModel.checkSelectedGenre(it))
                 }
-                GenresChip(item = category,  isSelected = textChipRememberOneState.value, {
+                GenresChip(item = category, isSelected = textChipRememberOneState.value, {
                     onClickToSelectCategory(it)
                     textChipRememberOneState.value = !textChipRememberOneState.value
                 })
@@ -146,17 +168,17 @@ fun CategoryFilmsView(viewModel:MainActivityViewModel, genres: MutableList<Genre
     }
 }
 
-    @OptIn(ExperimentalMaterialApi::class) @Composable
-    fun GenresChip(item: Genre, isSelected:Boolean, onClickToSelectCategory: () -> Unit = {}) {
-        Chip(
-                onClick = onClickToSelectCategory,
-                modifier = Modifier
-                        .padding(end = 6.dp),
-                border = BorderStroke(width = 1.dp, color = MaterialTheme.colors.onSecondary),
-                colors = ChipDefaults.chipColors(backgroundColor = if (isSelected) Color.LightGray else Color.Transparent)
-        ) {
-            Text(text = item.name)
-        }
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun GenresChip(item: Genre, isSelected: Boolean, onClickToSelectCategory: () -> Unit = {}) {
+    Chip(
+        onClick = onClickToSelectCategory,
+        modifier = Modifier.padding(end = 6.dp),
+        border = BorderStroke(width = 1.dp, color = MaterialTheme.colors.onSecondary),
+        colors = ChipDefaults.chipColors(backgroundColor = if (isSelected) Color.LightGray else Color.Transparent)
+    ) {
+        Text(text = item.name)
     }
+}
 
 

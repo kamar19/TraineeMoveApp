@@ -2,35 +2,29 @@ package com.example.traineemoveapp.data.remote
 
 import android.util.Log
 import com.example.traineemoveapp.data.MoviesHttpClientImpl
-import com.example.traineemoveapp.model.ResultActor
-import com.example.traineemoveapp.model.ResultGenre
+import com.example.traineemoveapp.model.Actor
+import com.example.traineemoveapp.model.Genre
+import com.example.traineemoveapp.utils.doOnError
+import com.example.traineemoveapp.utils.runOperationCatching
+import com.example.traineemoveapp.utils.Result
 
 class RemoteDataSource {
-
     val  moviesHttpClient =  MoviesHttpClientImpl()
+    suspend fun getMovies(seachMovie: String): Result<List<DTO.MovieForNET>, Throwable> =
+        runOperationCatching { moviesHttpClient.moviesApi.getMovies(seachMovie).movies }
+            .doOnError { error -> Log.e("Search movies from server error", error.toString()) }
 
-    suspend fun getMovies(seachMovie: String): DTO.ResultMovie {
-        Log.v("test_log","getMovies 01")
+    suspend fun getGenres(): Result<List<Genre>, Throwable> =
+        runOperationCatching { moviesHttpClient.moviesApi.getSearchGenres().genres }
+            .doOnError { error -> Log.e("Search genres from server error", error.toString()) }
 
-        val movies =  moviesHttpClient.moviesApi.getMovies(seachMovie)
-        Log.v("test_log","getMovies 02 - movies.movieForNETS.size =  " + movies.movieForNETS.size)
 
-        return  movies
-    }
+    suspend fun getActors(movie_id: Long?): Result<List<Actor>, Throwable> =
+        runOperationCatching { moviesHttpClient.moviesApi.getSearchActors(movie_id).actors }
+            .doOnError { error -> Log.e("Search actors from server error", error.toString()) }
 
-    suspend fun getGenreFromNet(): ResultGenre {
-        return moviesHttpClient.moviesApi.getSearchGenre()
-    }
-
-    suspend fun getSearchActor(movie_id: Long?): ResultActor {
-        return  moviesHttpClient.moviesApi.getSearchActor(movie_id)
-    }
-
-    suspend fun getMovie(movie_id: Long): DTO.MovieDetail {
-        val movie =  moviesHttpClient.moviesApi.getMovie(movie_id)
-        Log.v("test_log","getMovie - movie.title = " + movie.title)
-        return  movie
-    }
-
+    suspend fun getMovie(movie_id: Long): Result<DTO.MovieDetail, Throwable> =
+        runOperationCatching { moviesHttpClient.moviesApi.getMovie(movie_id)}
+            .doOnError { error -> Log.e("Search movie from server error", error.toString()) }
 
 }

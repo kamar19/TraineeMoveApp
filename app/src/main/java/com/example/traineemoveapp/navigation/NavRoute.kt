@@ -1,6 +1,5 @@
 package com.example.traineemoveapp.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavType
@@ -24,22 +23,27 @@ sealed class NavRoute(val route: String) {
     }
 }
 
-@Composable fun FilmAppScreen(viewModel: MainActivityViewModel) {
+@Composable
+fun FilmAppScreen(viewModel: MainActivityViewModel) {
     val navController = rememberNavController()
     NavHost(
-            navController = navController,
-            startDestination = NavRoute.FilmListRoute.route,
+        navController = navController,
+        startDestination = NavRoute.FilmListRoute.route,
     ) {
         composable(route = NavRoute.FilmListRoute.route) {
-            FilmListFragment(onClickToDetailScreen = { filmId ->
-                navController.navigate(NavRoute.DetailsRoute.createRoute(filmId))
-            }, titleText = stringResource(R.string.title_text) , onClickToSelectCategory = {
-                genreId ->
-                run {
-                    viewModel.updateSelectedGenres(genreId)
-                    viewModel.findFilms()
-                }
-            }, viewModel = viewModel)
+            FilmListFragment(
+                onClickToDetailScreen = { filmId ->
+                    navController.navigate(NavRoute.DetailsRoute.createRoute(filmId))
+                },
+                titleText = stringResource(R.string.title_text),
+                onClickToSelectCategory = { genreId ->
+                    run {
+                        viewModel.updateSelectedGenres(genreId)
+                        viewModel.findFilms()
+                    }
+                },
+                viewModel = viewModel
+            )
         }
         composable(route = NavRoute.DetailsRoute.route, arguments = listOf(navArgument(FILM_ID) {
             type = NavType.LongType
@@ -47,8 +51,7 @@ sealed class NavRoute(val route: String) {
             val filmId = backStackEntry.arguments?.getLong(FILM_ID)
             requireNotNull(filmId) { "gamesId parameter wasn't found. Please make sure it's set!" }
             val viewModelDetail = DetailFilmViewModel(viewModel.filmRepository, filmId)
-            Log.v("test_log","FilmDetailsFragmen - filmId = " + filmId.toString())
-            FilmDetailsFragment(viewModel = viewModelDetail, idFilm = filmId )
+            FilmDetailsFragment(viewModel = viewModelDetail)
         }
     }
 }

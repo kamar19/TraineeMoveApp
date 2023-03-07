@@ -1,21 +1,32 @@
 package com.example.traineemoveapp.data.remote
 
+import com.example.traineemoveapp.model.Actor
 import com.example.traineemoveapp.model.Genre
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 class DTO {
-
     @Serializable
     data class ResultMovie(
             @SerialName("page")
             val page: Int,
             @SerialName("results")
-            val movieForNETS: List<MovieForNET>
+            val movies: List<MovieForNET>
     )
-
     @Serializable
-    data class MovieForNET( // класс для работы с некоторыми запросами API
+    data class ResultGenre(
+            @SerialName("genres")
+            val genres: List<Genre>
+    )
+    @Serializable
+    data class ResultActor(
+            @SerialName("id")
+            val page: Int,
+            @SerialName("cast")
+            val actors: List<Actor>
+    )
+    @Serializable
+    data class MovieForNET(
             @SerialName("id")
             val id: Long,
             @SerialName("backdrop_path")
@@ -32,11 +43,8 @@ class DTO {
             val adult: Boolean,
             val vote_count: Int
     )
-
-
-
     @Serializable
-    data class MovieDetail( // класс для получения запросов Detail из API
+    data class MovieDetail(
             @SerialName("id")
             val id: Long,
             @SerialName("backdrop_path")
@@ -55,5 +63,4 @@ class DTO {
             val adult: Boolean,
             val vote_count: Int
     )
-
 }
