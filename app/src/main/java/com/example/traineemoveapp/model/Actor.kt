@@ -1,8 +1,19 @@
 package com.example.traineemoveapp.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Actor (var id: Int = 0,
-                  var name: String = "",
-                  var profile_path:String = "")
+@Parcelize
+data class Actor(
+        @SerialName("id")
+        var actorId: Int = 0,
+        var actorMovieId: Long = 0,
+        @SerialName("profile_path")
+        var picture: String? = "",
+        @SerialName("name")
+        var actorName: String = ""
+) : Parcelable
+

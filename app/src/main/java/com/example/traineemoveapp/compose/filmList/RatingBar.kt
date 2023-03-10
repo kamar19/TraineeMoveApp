@@ -21,19 +21,15 @@ import com.example.traineemoveapp.R
 
 @Composable
 fun RatingBar(modifier: Modifier, rating: Float, size: Dp, spaceBetween: Dp = 0.dp) {
-
     val image = ImageBitmap.imageResource(id = R.drawable.star)
     val imageFull = ImageBitmap.imageResource(id = R.drawable.draw_star)
-
     val totalCount = 5
-
     val height = LocalDensity.current.run { size }
     val width = LocalDensity.current.run { size }
     val space = LocalDensity.current.run { spaceBetween.toPx() }
     val totalWidth = width * totalCount + spaceBetween * (totalCount - 1)
-
-
-    Box(modifier
+    Box(
+        modifier
             .width(totalWidth)
             .height(height)
             .drawBehind {
@@ -41,7 +37,11 @@ fun RatingBar(modifier: Modifier, rating: Float, size: Dp, spaceBetween: Dp = 0.
             })
 }
 
-private fun DrawScope.drawRating(rating: Float, image: ImageBitmap, imageFull: ImageBitmap, space: Float) {
+private fun DrawScope.drawRating(rating: Float,
+                                 image: ImageBitmap,
+                                 imageFull: ImageBitmap,
+                                 space: Float
+) {
     val totalCount = 5
     val imageWidth = image.width.toFloat()
     val imageHeight = size.height
@@ -60,7 +60,12 @@ private fun DrawScope.drawRating(rating: Float, image: ImageBitmap, imageFull: I
         val end = imageWidth * totalCount + space * (totalCount - 1)
         val start = rating * imageWidth + ratingInt * space
         val size = end - start
-        drawRect(Color.Transparent, topLeft = Offset(start, 0f), size = Size(size, height = imageHeight), blendMode = BlendMode.SrcIn)
+        drawRect(
+            Color.Transparent,
+            topLeft = Offset(start, 0f),
+            size = Size(size, height = imageHeight),
+            blendMode = BlendMode.SrcIn
+        )
     }
 }
 

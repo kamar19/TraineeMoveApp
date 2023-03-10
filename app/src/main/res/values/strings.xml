@@ -5,4 +5,6 @@
     <string name="search_text">"search..."</string>
     <string name="title_text">"Популярное сейчас"</string>
     <string name="artist_title_text">"Актеры"</string>
+    <string name="error_net_text">Error network</string>
+    <string name="load_net_text">This may take a while</string>
 </resources>

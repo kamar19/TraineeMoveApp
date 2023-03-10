@@ -28,115 +28,176 @@ import com.example.traineemoveapp.MainActivity.Companion.COUNT_ROWS
 import com.example.traineemoveapp.R
 import com.example.traineemoveapp.model.Genre
 import com.example.traineemoveapp.viewModel.MainActivityViewModel
+import com.example.traineemoveapp.viewModel.states.ViewModelListState
 
-@Composable fun FilmListFragment(modifier: Modifier = Modifier, viewModel: MainActivityViewModel, titleText:String , onClickToDetailScreen: (Int) -> Unit = {},  onClickToSelectCategory: (Int) -> Unit = {}) {
-        Column(
+@Composable
+fun FilmListFragment(modifier: Modifier = Modifier,
+                     viewModel: MainActivityViewModel,
+                     titleText: String,
+                     onClickToDetailScreen: (Long) -> Unit = {},
+                     onClickToSelectCategory: (Int) -> Unit = {}
+) {
+    val state = viewModel.uiFilmsState.collectAsState()
+    when (state.value) {
+        is ViewModelListState.Loading -> ProgressIndicator()
+        is ViewModelListState.Error -> ErrorBox()
+        is ViewModelListState.Success -> {
+            Column(
                 modifier = modifier,
                 verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            SearchField(viewModel)
-            Text(text = titleText, fontWeight = FontWeight.Bold, textAlign = TextAlign.Start,  fontSize = 16.sp, maxLines = 2, modifier = Modifier
-                    .fillMaxWidth()
-                    .padding( vertical = 10.dp, horizontal = 15.dp)
-            )
-            CategoryFilmsView(viewModel, onClickToSelectCategory)
-            FilmListGrid(
-                    modifier = Modifier.padding(  horizontal = dimensionResource(id = R.dimen.margin_normal)),
-                    onClickToDetailScreen = onClickToDetailScreen,
-                    viewModel = viewModel,
-            )
-        }
-}
-
-@SuppressLint("StateFlowValueCalledInComposition") @Composable
-private fun SearchField(viewModel:MainActivityViewModel )
- {
-     val text = remember {
-         mutableStateOf("")
-     }
-    TextField(
-            modifier = Modifier
-                    .fillMaxWidth()
-                    .height(55.dp),
-            onValueChange = {
-                text.value = it
-                viewModel.changeSearchText(text.value)
-                viewModel.findFilms()
-            },
-            value = text.value,
-            textStyle = TextStyle(color = Color.Black, fontSize = 13.sp),
-            trailingIcon = {
-                Icon(Icons.Default.Search,
-                        contentDescription = stringResource(R.string.search_text),
-                        modifier = Modifier
-                                .padding(20.dp, 10.dp)
-                                .size(20.dp)
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                SearchField(viewModel)
+                Text(
+                    text = titleText,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Start,
+                    fontSize = 16.sp,
+                    maxLines = 2,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp, horizontal = 15.dp)
                 )
-            },
-            keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    capitalization = KeyboardCapitalization.None,
-                    autoCorrect = false,
-                    imeAction = ImeAction.Search,),
-            colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent)
-    )
-}
-
-@Composable fun FilmListGrid(
-        modifier: Modifier = Modifier,
-        viewModel: MainActivityViewModel,
-        onClickToDetailScreen: (Int) -> Unit = {},
-) {
-    val myItems by viewModel.uiState.collectAsState()
-    LazyVerticalGrid(
-            columns = GridCells.Fixed(COUNT_ROWS),
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.film_item_horizontal)),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.film_item_vertical)),
-    ) {
-        items(
-                items = myItems.films,
-        ) { film ->
-            FilmListItem(film = film, viewModel.getImage(film.id_photo)) {
-                film.id?.let { onClickToDetailScreen(it) }
+                CategoryFilmsView(
+                    viewModel, state, onClickToSelectCategory
+                )
+                FilmListGrid(
+                    state,
+                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.margin_normal)),
+                    onClickToDetailScreen = onClickToDetailScreen,
+                )
             }
         }
     }
 }
 
 @Composable
-fun CategoryFilmsView(viewModel:MainActivityViewModel, onClickToSelectCategory: (Int) -> Unit = {} ) {
-    LazyRow(contentPadding = PaddingValues(start = 20.dp)) {
-        items(items = viewModel.getAllGenres()) {
-            category ->
-            category.id?.let {
-                val textChipRememberOneState = remember {
-                    mutableStateOf(viewModel.checkSelectedGenre(it))
+fun ErrorBox() {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth().fillMaxHeight() ) {
+        Text(
+            text = stringResource(R.string.error_net_text), modifier = Modifier.align(
+                Alignment.Center
+            )
+        )
+    }
+}
+
+@Composable
+fun ProgressIndicator() {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth().fillMaxHeight() ) {
+        CircularProgressIndicator()
+        Text(
+            text = stringResource(R.string.load_net_text), modifier = Modifier.align(
+                Alignment.Center
+            )
+        )
+    }
+}
+
+@SuppressLint("StateFlowValueCalledInComposition")
+@Composable
+private fun SearchField(viewModel: MainActivityViewModel) {
+    val text = remember {
+        mutableStateOf("")
+    }
+    TextField(modifier = Modifier
+        .fillMaxWidth()
+        .height(55.dp),
+        onValueChange = {
+            text.value = it
+            viewModel.changeSearchText(text.value)
+            viewModel.findFilms()
+        },
+        value = text.value,
+        textStyle = TextStyle(color = Color.Black, fontSize = 13.sp),
+        trailingIcon = {
+            Icon(
+                Icons.Default.Search,
+                contentDescription = stringResource(R.string.search_text),
+                modifier = Modifier
+                    .padding(20.dp, 10.dp)
+                    .size(20.dp)
+            )
+        },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Text,
+            capitalization = KeyboardCapitalization.None,
+            autoCorrect = false,
+            imeAction = ImeAction.Search,
+        ),
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = Color.White,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
+        )
+    )
+}
+
+@Composable
+fun FilmListGrid(
+        state: State<ViewModelListState>,
+        modifier: Modifier = Modifier,
+        onClickToDetailScreen: (Long) -> Unit = {},
+) {
+    when (state.value) {
+        is ViewModelListState.Loading -> ProgressIndicator()
+        is ViewModelListState.Error -> ErrorBox()
+        is ViewModelListState.Success -> {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(COUNT_ROWS),
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.film_item_horizontal)),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.film_item_vertical)),
+            ) {
+                val films = (state.value as ViewModelListState.Success).listFilm
+                items(
+                    items = films,
+                ) { film ->
+                    FilmListItem(film = film) {
+                        film.id?.let { onClickToDetailScreen(it) }
+                    }
                 }
-                GenresChip(item = category,  isSelected = textChipRememberOneState.value, {
-                    onClickToSelectCategory(it)
-                    textChipRememberOneState.value = !textChipRememberOneState.value
-                })
             }
         }
     }
 }
 
-    @OptIn(ExperimentalMaterialApi::class) @Composable
-    fun GenresChip(item: Genre, isSelected:Boolean, onClickToSelectCategory: () -> Unit = {}) {
-        Chip(
-                onClick = onClickToSelectCategory,
-                modifier = Modifier
-                        .padding(end = 6.dp),
-                border = BorderStroke(width = 1.dp, color = MaterialTheme.colors.onSecondary),
-                colors = ChipDefaults.chipColors(backgroundColor = if (isSelected) Color.LightGray else Color.Transparent)
-        ) {
-            Text(text = item.name)
+@Composable
+fun CategoryFilmsView(viewModel: MainActivityViewModel,
+                      state: State<ViewModelListState>,
+                      onClickToSelectCategory: (Int) -> Unit = {}
+) {
+    when (state.value) {
+        is ViewModelListState.Loading -> ProgressIndicator()
+        is ViewModelListState.Error -> ErrorBox()
+        is ViewModelListState.Success -> {
+            val genres = (state.value as ViewModelListState.Success).genres
+            LazyRow(contentPadding = PaddingValues(start = 20.dp)) {
+                items(items = genres) { category ->
+                    category.id?.let {
+                        val textChipRememberOneState = remember {
+                            mutableStateOf(viewModel.checkSelectedGenre(it))
+                        }
+                        GenresChip(item = category, isSelected = textChipRememberOneState.value, {
+                            onClickToSelectCategory(it)
+                            textChipRememberOneState.value = !textChipRememberOneState.value
+                        })
+                    }
+                }
+            }
         }
     }
+}
 
-
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun GenresChip(item: Genre, isSelected: Boolean, onClickToSelectCategory: () -> Unit = {}) {
+    Chip(
+        onClick = onClickToSelectCategory,
+        modifier = Modifier.padding(end = 6.dp),
+        border = BorderStroke(width = 1.dp, color = MaterialTheme.colors.onSecondary),
+        colors = ChipDefaults.chipColors(backgroundColor = if (isSelected) Color.LightGray else Color.Transparent)
+    ) {
+        Text(text = item.name)
+    }
+}

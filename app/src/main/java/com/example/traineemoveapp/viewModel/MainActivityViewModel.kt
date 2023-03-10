@@ -2,43 +2,48 @@ package com.example.traineemoveapp.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.traineemoveapp.R
+import com.example.traineemoveapp.MainActivity.Companion.SEARCH_PRINCIPLE
 import com.example.traineemoveapp.model.Film
 import com.example.traineemoveapp.model.Genre
-import com.example.traineemoveapp.repository.FilmRepository
+import com.example.traineemoveapp.repository.RemoteRepository
+import com.example.traineemoveapp.viewModel.states.ViewModelListState
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import com.example.traineemoveapp.utils.Result
 
-class MainActivityViewModel(val filmRepository: FilmRepository) : ViewModel() {
+class MainActivityViewModel(val filmRepository: RemoteRepository) : ViewModel() {
     private val selectedGenres: MutableList<Int> = mutableListOf()
-    var allFilms: MutableList<Film> = mutableListOf()
-
-    data class ViewModelInputState(var searchText: String)
-    private val _uiInputState = MutableStateFlow(ViewModelInputState(""))
-    val uiInputState: StateFlow<ViewModelInputState> get() = _uiInputState.asStateFlow()
-
-    data class ViewModelListState(val films: MutableList<Film> = mutableListOf())
-    private val _uiState = MutableStateFlow(ViewModelListState())
-    val uiState: StateFlow<ViewModelListState> get() = _uiState.asStateFlow()
+    var genres: List<Genre> = mutableListOf()
+    var allFilms: List<Film> = mutableListOf()
+    private var searchText: String = ""
+    private var scope = viewModelScope
+    private val _uiFilmsState = MutableStateFlow<ViewModelListState>(ViewModelListState.Loading)
+    val uiFilmsState: StateFlow<ViewModelListState> get() = _uiFilmsState.asStateFlow()
 
     init {
-        startValue()
-    }
-
-    fun findFilms(){
-        if (uiInputState.value.searchText.length > 0) {
-            changeFilms(allFilms.filter { it.genre_ids.containsAll(getSelectedGenres()) &&  it.name.contains(uiInputState.value.searchText, true) } as MutableList<Film>)
-        } else {
-            changeFilms(allFilms.filter { it.genre_ids.containsAll(getSelectedGenres())} as MutableList<Film>)
+        scope.launch {
+            startValue()
         }
     }
 
-    fun changeSearchText(newText:String){
-        _uiInputState.value.searchText =  newText
+    fun findFilms() {
+        if (searchText.length > 0) {
+            changeFilms(allFilms.filter {
+                it.genres.containsAll(getSelectedGenres()) && it.title.contains(
+                    searchText, true
+                )
+            } as MutableList<Film>)
+        } else {
+            changeFilms(allFilms.filter { it.genres.containsAll(getSelectedGenres()) } as MutableList<Film>)
+        }
     }
 
-    fun checkSelectedGenre(idGenres: Int):Boolean {
-        return selectedGenres.contains(idGenres)
+    fun changeSearchText(newText: String) {
+        searchText = newText
+    }
+
+    fun checkSelectedGenre(idGenre: Int): Boolean {
+        return selectedGenres.contains(idGenre)
     }
 
     @JvmName("getSelectedGenres1")
@@ -46,36 +51,30 @@ class MainActivityViewModel(val filmRepository: FilmRepository) : ViewModel() {
         return selectedGenres
     }
 
-    fun updateSelectedGenres(genre:Int) {
-        if (selectedGenres.contains(genre)) {
-            selectedGenres.removeIf { it == genre }
+    fun updateSelectedGenres(idGenre: Int) {
+        if (selectedGenres.contains(idGenre)) {
+            selectedGenres.removeIf { it == idGenre }
         } else {
-            selectedGenres.add (genre)
+            selectedGenres.add(idGenre)
         }
     }
 
     fun changeFilms(newfilms: MutableList<Film>) {
         viewModelScope.launch {
-            _uiState.emit(ViewModelListState(newfilms))
+            _uiFilmsState.emit(ViewModelListState.Success(newfilms, genres))
         }
     }
 
-    fun startValue() {
-        allFilms = filmRepository.getAllFils()
-        _uiState.value = ViewModelListState(films =  allFilms)
-    }
-
-    fun getImage(idImage: Int): Int {
-        when (idImage) {
-            1 -> return R.drawable.image1
-            2 -> return R.drawable.image2
-            3 -> return R.drawable.image3
-            4 -> return R.drawable.image4
-            else -> return R.drawable.image1
+    suspend fun startValue() {
+        val allFilmsResult = filmRepository.loadMoviesFromNET(SEARCH_PRINCIPLE)
+        val newGenresResult = filmRepository.loadGenreFromNET()
+        if (newGenresResult is Result.Success) {
+            genres = newGenresResult.result
         }
-    }
-    fun getAllGenres(): MutableList<Genre> {
-        return filmRepository.getAllGenre()
+        if (allFilmsResult is Result.Success) {
+            allFilms = allFilmsResult.result
+            _uiFilmsState.value = ViewModelListState.Success(allFilms, genres)
+        }
     }
 
 }
