@@ -1,6 +1,7 @@
 package com.example.traineemoveapp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -26,6 +27,8 @@ sealed class NavRoute(val route: String) {
 @Composable
 fun FilmAppScreen(viewModel: MainActivityViewModel) {
     val navController = rememberNavController()
+    val viewModelDetail = DetailFilmViewModel(viewModel.filmRepository, 0)
+    val stateFilmDetail = viewModelDetail.uiFilmDetailState.collectAsState()
     NavHost(
         navController = navController,
         startDestination = NavRoute.FilmListRoute.route,
@@ -50,8 +53,8 @@ fun FilmAppScreen(viewModel: MainActivityViewModel) {
         })) { backStackEntry ->
             val filmId = backStackEntry.arguments?.getLong(FILM_ID)
             requireNotNull(filmId) { "gamesId parameter wasn't found. Please make sure it's set!" }
-            val viewModelDetail = DetailFilmViewModel(viewModel.filmRepository, filmId)
-            FilmDetailsFragment(viewModel = viewModelDetail)
+            viewModelDetail.updateFilm(filmId)
+            FilmDetailsFragment(stateFilmDetail)
         }
     }
 }

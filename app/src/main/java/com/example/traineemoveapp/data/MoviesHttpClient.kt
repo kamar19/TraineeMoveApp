@@ -16,7 +16,7 @@ interface MoviesHttpClient {
 class MoviesHttpClientImpl : MoviesHttpClient {
     private val client = OkHttpClient
         .Builder()
-        .addInterceptor(Interceptor())
+        .addInterceptor(TraineeMoveInterceptor())
         .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
         .build()
 

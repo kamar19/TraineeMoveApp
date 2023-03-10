@@ -26,23 +26,17 @@ import com.example.traineemoveapp.MainActivity.Companion.DETAIL_TEXT_MAX_LINES
 import com.example.traineemoveapp.MainActivity.Companion.TITLE_TEXT_MAX_LINES
 import com.example.traineemoveapp.R
 import com.example.traineemoveapp.compose.filmList.*
-import com.example.traineemoveapp.model.Actor
 import com.example.traineemoveapp.model.Genre
-import com.example.traineemoveapp.viewModel.DetailFilmViewModel
-import com.example.traineemoveapp.viewModel.states.ViewModelActorsState
 import com.example.traineemoveapp.viewModel.states.ViewModelDetailsState
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun FilmDetailsFragment(viewModel: DetailFilmViewModel) {
-    val stateFilmDetail = viewModel.uiFilmDetailState.collectAsState()
-    val stateActor = viewModel.uiActorState.collectAsState()
-    val stateError = viewModel.errorDetailState.collectAsState()
+fun FilmDetailsFragment(stateFilmDetail:  State<ViewModelDetailsState>) {
     val configuration = LocalConfiguration.current
     when (stateFilmDetail.value) {
-        is ViewModelDetailsState.Loading -> {}
-        is ViewModelDetailsState.Error -> {}
+        is ViewModelDetailsState.Loading -> ProgressIndicator()
+        is ViewModelDetailsState.Error -> ErrorBox()
         is ViewModelDetailsState.Success -> {
             val film = (stateFilmDetail.value as ViewModelDetailsState.Success).film
             film.let {
@@ -115,14 +109,7 @@ fun FilmDetailsFragment(viewModel: DetailFilmViewModel) {
                                 .padding(10.dp)
                                 .align(Alignment.Start)
                         )
-                        when (stateActor.value) {
-                            is ViewModelActorsState.Loading -> {}
-                            is ViewModelActorsState.Error -> {}
-                            is ViewModelActorsState.Success -> {
-                                val actors = (stateActor.value as ViewModelActorsState.Success).actorList
-                                ActorsListView(actors)
-                            }
-                        }
+                        ActorsListView(state = stateFilmDetail)
                     }) {
                     FilmImageDetails(model = MainActivity.BASE_URL_MOVIES + film.posterPicture)
                 }
@@ -132,8 +119,7 @@ fun FilmDetailsFragment(viewModel: DetailFilmViewModel) {
 }
 
 @Composable
-fun CategoryDetailsView(filmGenres: MutableList<Genre>, onClickToSelectCategory: (Int) -> Unit = {}
-) {
+fun CategoryDetailsView(filmGenres: MutableList<Genre>) {
     LazyRow(
         contentPadding = PaddingValues(start = 5.dp),
         horizontalArrangement = Arrangement.Start,
@@ -178,11 +164,14 @@ fun FilmImageDetails(model: Any?) {
 }
 
 @Composable
-fun ActorsListView(actors: List<Actor>) {
-    LazyRow(contentPadding = PaddingValues(start = 20.dp)) {
-        items(items = actors) { actor ->
-            actor.let {
-                ActorListItem(actor = it)
+fun ActorsListView(state: State<ViewModelDetailsState>) {
+    if (state.value is ViewModelDetailsState.Success) {
+        val actors = (state.value as ViewModelDetailsState.Success).actors
+        LazyRow(contentPadding = PaddingValues(start = 20.dp)) {
+            items(items = actors) { actor ->
+                actor.let {
+                    ActorListItem(actor = it)
+                }
             }
         }
     }

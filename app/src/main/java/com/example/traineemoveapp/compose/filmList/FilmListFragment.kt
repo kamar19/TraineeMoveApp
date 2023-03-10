@@ -26,10 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.traineemoveapp.MainActivity.Companion.COUNT_ROWS
 import com.example.traineemoveapp.R
-import com.example.traineemoveapp.model.Film
 import com.example.traineemoveapp.model.Genre
 import com.example.traineemoveapp.viewModel.MainActivityViewModel
-import com.example.traineemoveapp.viewModel.states.ViewModelGenresListState
 import com.example.traineemoveapp.viewModel.states.ViewModelListState
 
 @Composable
@@ -40,19 +38,9 @@ fun FilmListFragment(modifier: Modifier = Modifier,
                      onClickToSelectCategory: (Int) -> Unit = {}
 ) {
     val state = viewModel.uiFilmsState.collectAsState()
-    val stateGenre = viewModel.uiGenresState.collectAsState()
-    val stateError = viewModel.errorState.collectAsState()
-
-    val genres : List<Genre>
-    if  (stateGenre.value is ViewModelGenresListState.Success) {
-        genres = (stateGenre.value as ViewModelGenresListState.Success).genresList
-    } else {
-        genres = arrayListOf()
-    }
-
     when (state.value) {
-        is ViewModelListState.Loading -> {}
-        is ViewModelListState.Error -> {}
+        is ViewModelListState.Loading -> ProgressIndicator()
+        is ViewModelListState.Error -> ErrorBox()
         is ViewModelListState.Success -> {
             Column(
                 modifier = modifier,
@@ -71,18 +59,38 @@ fun FilmListFragment(modifier: Modifier = Modifier,
                         .padding(vertical = 10.dp, horizontal = 15.dp)
                 )
                 CategoryFilmsView(
-                    viewModel,
-                    genres = genres,
-                    onClickToSelectCategory
+                    viewModel, state, onClickToSelectCategory
                 )
                 FilmListGrid(
-                    films = (state.value as ViewModelListState.Success) .listFilm,
+                    state,
                     modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.margin_normal)),
                     onClickToDetailScreen = onClickToDetailScreen,
-                    viewModel = viewModel,
                 )
             }
         }
+    }
+}
+
+@Composable
+fun ErrorBox() {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth().fillMaxHeight() ) {
+        Text(
+            text = stringResource(R.string.error_net_text), modifier = Modifier.align(
+                Alignment.Center
+            )
+        )
+    }
+}
+
+@Composable
+fun ProgressIndicator() {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth().fillMaxHeight() ) {
+        CircularProgressIndicator()
+        Text(
+            text = stringResource(R.string.load_net_text), modifier = Modifier.align(
+                Alignment.Center
+            )
+        )
     }
 }
 
@@ -128,21 +136,27 @@ private fun SearchField(viewModel: MainActivityViewModel) {
 
 @Composable
 fun FilmListGrid(
-        films: List<Film>,
+        state: State<ViewModelListState>,
         modifier: Modifier = Modifier,
-        viewModel: MainActivityViewModel,
         onClickToDetailScreen: (Long) -> Unit = {},
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(COUNT_ROWS),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.film_item_horizontal)),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.film_item_vertical)),
-    ) {
-        items(
-            items = films,
-        ) { film ->
-            FilmListItem(film = film) {
-                film.id?.let { onClickToDetailScreen(it) }
+    when (state.value) {
+        is ViewModelListState.Loading -> ProgressIndicator()
+        is ViewModelListState.Error -> ErrorBox()
+        is ViewModelListState.Success -> {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(COUNT_ROWS),
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.film_item_horizontal)),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.film_item_vertical)),
+            ) {
+                val films = (state.value as ViewModelListState.Success).listFilm
+                items(
+                    items = films,
+                ) { film ->
+                    FilmListItem(film = film) {
+                        film.id?.let { onClickToDetailScreen(it) }
+                    }
+                }
             }
         }
     }
@@ -150,19 +164,26 @@ fun FilmListGrid(
 
 @Composable
 fun CategoryFilmsView(viewModel: MainActivityViewModel,
-                      genres: List<Genre>,
+                      state: State<ViewModelListState>,
                       onClickToSelectCategory: (Int) -> Unit = {}
 ) {
-    LazyRow(contentPadding = PaddingValues(start = 20.dp)) {
-        items(items = genres) { category ->
-            category.id?.let {
-                val textChipRememberOneState = remember {
-                    mutableStateOf(viewModel.checkSelectedGenre(it))
+    when (state.value) {
+        is ViewModelListState.Loading -> ProgressIndicator()
+        is ViewModelListState.Error -> ErrorBox()
+        is ViewModelListState.Success -> {
+            val genres = (state.value as ViewModelListState.Success).genres
+            LazyRow(contentPadding = PaddingValues(start = 20.dp)) {
+                items(items = genres) { category ->
+                    category.id?.let {
+                        val textChipRememberOneState = remember {
+                            mutableStateOf(viewModel.checkSelectedGenre(it))
+                        }
+                        GenresChip(item = category, isSelected = textChipRememberOneState.value, {
+                            onClickToSelectCategory(it)
+                            textChipRememberOneState.value = !textChipRememberOneState.value
+                        })
+                    }
                 }
-                GenresChip(item = category, isSelected = textChipRememberOneState.value, {
-                    onClickToSelectCategory(it)
-                    textChipRememberOneState.value = !textChipRememberOneState.value
-                })
             }
         }
     }
@@ -180,5 +201,3 @@ fun GenresChip(item: Genre, isSelected: Boolean, onClickToSelectCategory: () -> 
         Text(text = item.name)
     }
 }
-
-

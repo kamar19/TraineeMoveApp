@@ -25,7 +25,7 @@ fun FilmListItem(film: Film, onClick: () -> Unit) {
         pathImage = film.posterPicture,
         descriptionText = film.overview,
         raiting = film.ratings,
-        pg = film.adult,
+        adult = film.adult,
         onClick = onClick
     )
 }
@@ -36,7 +36,7 @@ fun ImageListItem(name: String,
                   pathImage: String,
                   descriptionText: String,
                   raiting: Float,
-                  pg: String,
+                  adult: String,
                   onClick: () -> Unit
 ) {
     Card(
@@ -84,7 +84,7 @@ fun ImageListItem(name: String,
 
                 ) {
                 RatingBar(rating = raiting, spaceBetween = 3.dp, size = 20.dp, modifier = Modifier)
-                AgeRatingComponent(ageRating = pg)
+                AgeRatingComponent(ageRating = adult)
             }
         }
     }

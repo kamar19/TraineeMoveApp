@@ -4,7 +4,7 @@ import com.example.traineemoveapp.MainActivity.Companion.apiKey
 import okhttp3.Interceptor
 import okhttp3.Response
 
-class Interceptor : Interceptor {
+class TraineeMoveInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val originalHttpUrl = originalRequest.url
@@ -19,4 +19,3 @@ class Interceptor : Interceptor {
         return chain.proceed(url)
     }
 }
-
