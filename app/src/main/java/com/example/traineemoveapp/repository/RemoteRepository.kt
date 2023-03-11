@@ -13,7 +13,7 @@ class RemoteRepository(val remoteDataSource: RemoteDataSource) {
 
     suspend fun loadGenreFromNET(): Result<List<Genre>, Throwable> =
         remoteDataSource.getGenres()
-        .mapSuccess { dto -> dto.map { genre -> Genre(id = genre.id, name = genre.name) } }
+        .mapSuccess { dto -> dto.map { genre -> Genre(genreId = genre.genreId, name = genre.name) } }
 
     suspend fun loadActorFromNET(idMovie: Long): Result<List<Actor>, Throwable> =
         remoteDataSource.getActors(idMovie)

@@ -174,7 +174,7 @@ fun CategoryFilmsView(viewModel: MainActivityViewModel,
             val genres = (state.value as ViewModelListState.Success).genres
             LazyRow(contentPadding = PaddingValues(start = 20.dp)) {
                 items(items = genres) { category ->
-                    category.id?.let {
+                    category.genreId?.let {
                         val textChipRememberOneState = remember {
                             mutableStateOf(viewModel.checkSelectedGenre(it))
                         }
