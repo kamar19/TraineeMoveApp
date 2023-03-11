@@ -27,7 +27,7 @@ sealed class NavRoute(val route: String) {
 @Composable
 fun FilmAppScreen(viewModel: MainActivityViewModel) {
     val navController = rememberNavController()
-    val viewModelDetail = DetailFilmViewModel(viewModel.filmRepository, 0)
+    val viewModelDetail = DetailFilmViewModel(viewModel.repositoryRemote, 0)
     val stateFilmDetail = viewModelDetail.uiFilmDetailState.collectAsState()
     NavHost(
         navController = navController,

@@ -21,7 +21,7 @@ class RemoteRepository(val remoteDataSource: RemoteDataSource) {
             dto.map { actors ->
                 Actor(
                     actorId = actors.actorId,
-                    actorMovieId = actors.actorMovieId,
+                    actorfilmId = actors.actorfilmId,
                     picture = BASE_URL_MOVIES.plus(actors.picture),
                     actorName = actors.actorName
                 )
@@ -35,6 +35,14 @@ class RemoteRepository(val remoteDataSource: RemoteDataSource) {
         remoteDataSource.getMovies(seachMovie)
         .mapSuccess { dto ->
             dto.map { seachMovie ->
+                val actorsResult = loadActorFromNET(seachMovie.id)
+                val actors: List<Actor>
+                when (actorsResult) {
+                    is Result.Success -> {
+                        actors = actorsResult.result
+                    }
+                    else -> actors = arrayListOf()
+                }
                 Film(
                     id = seachMovie.id,
                     title = seachMovie.title,
@@ -42,7 +50,8 @@ class RemoteRepository(val remoteDataSource: RemoteDataSource) {
                     ratings = seachMovie.vote_average / 2,
                     overview = seachMovie.overview,
                     vote_count = seachMovie.vote_count,
-                    genres = seachMovie.genreIds,
+                    genres = seachMovie.genreIds ,
+//                    actors = actors,
                     adult = if (seachMovie.adult) "16+" else "13+"
                 )
             }

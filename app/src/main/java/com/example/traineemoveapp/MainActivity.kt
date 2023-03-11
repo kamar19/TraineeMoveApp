@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.ui.Modifier
 import com.example.traineemoveapp.data.remote.RemoteDataSource
+import com.example.traineemoveapp.data.room.TraineeMoveDatabase
 import com.example.traineemoveapp.navigation.FilmAppScreen
 import com.example.traineemoveapp.ui.theme.TraineeMoveAppTheme
 import com.example.traineemoveapp.repository.RemoteRepository
+import com.example.traineemoveapp.repository.RepositoryDB
 import com.example.traineemoveapp.viewModel.MainActivityViewModel
 
 class MainActivity : ComponentActivity() {
@@ -17,7 +19,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val filmRepository = RemoteRepository(RemoteDataSource())
-        val viewModel = MainActivityViewModel(filmRepository)
+        val traineeMoveDatabase = TraineeMoveDatabase.createInstance(this)
+        val repositoryDB = RepositoryDB(traineeMoveDatabase)
+        val viewModel = MainActivityViewModel(filmRepository, repositoryDB)
         setContent {
             TraineeMoveAppTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
