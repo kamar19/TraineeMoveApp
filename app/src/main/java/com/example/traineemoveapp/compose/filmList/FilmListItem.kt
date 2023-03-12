@@ -79,8 +79,10 @@ fun ImageListItem(name: String,
             )
             Row(
                 modifier = Modifier
-                    .padding(start = 5.dp, end = 5.dp, bottom = 3.dp, top = 3.dp)
-                    .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+                    .padding(start = 5.dp, end = 5.dp, bottom = 10.dp, top = 3.dp)
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                , verticalAlignment = Alignment.CenterVertically,
 
                 ) {
                 RatingBar(rating = raiting, spaceBetween = 3.dp, size = 20.dp, modifier = Modifier)
