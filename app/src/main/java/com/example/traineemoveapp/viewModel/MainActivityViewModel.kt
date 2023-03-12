@@ -1,6 +1,5 @@
 package com.example.traineemoveapp.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.traineemoveapp.MainActivity.Companion.SEARCH_PRINCIPLE
@@ -14,7 +13,8 @@ import com.example.traineemoveapp.utils.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class MainActivityViewModel(val repositoryRemote: RemoteRepository, val repositoryDB: RepositoryDB) : ViewModel() {
+class MainActivityViewModel(val repositoryRemote: RemoteRepository, val repositoryDB: RepositoryDB
+) : ViewModel() {
     private val selectedGenres: MutableList<Int> = mutableListOf()
     var genres: List<Genre> = mutableListOf()
     var allFilms: List<Film> = mutableListOf()
@@ -29,15 +29,23 @@ class MainActivityViewModel(val repositoryRemote: RemoteRepository, val reposito
         }
     }
 
+    fun refresh() {
+        scope.launch {
+            allFilms = updateDatasFromNet()
+            changeFilms(allFilms as MutableList<Film>, genres)
+        }
+    }
+
     fun findFilms() {
         if (searchText.length > 0) {
             changeFilms(allFilms.filter {
                 it.genres.containsAll(getSelectedGenres()) && it.title.contains(
                     searchText, true
                 )
-            } as MutableList<Film>)
+            } as MutableList<Film>, genres)
         } else {
-            changeFilms(allFilms.filter { it.genres.containsAll(getSelectedGenres()) } as MutableList<Film>)
+            changeFilms(allFilms.filter { it.genres.containsAll(getSelectedGenres()) } as MutableList<Film>,
+                genres)
         }
     }
 
@@ -62,54 +70,59 @@ class MainActivityViewModel(val repositoryRemote: RemoteRepository, val reposito
         }
     }
 
-    fun changeFilms(newfilms: MutableList<Film>) {
+    fun changeFilms(newfilms: MutableList<Film>, genres: List<Genre>) {
         viewModelScope.launch {
             _uiFilmsState.emit(ViewModelListState.Success(newfilms, genres))
         }
     }
 
     suspend fun startValue() {
-        loadGenresList()
-        loadFilmsList()
+        val listGenreEntity: List<GenreEntity> = loadGenresList()
+        genres = repositoryDB.convertGenreEntityToGenre(listGenreEntity)
+        val listRelationMovie: List<FilmRelation> = loadFilmsList()
+        if (listRelationMovie.size > 0) {
+            allFilms = repositoryDB.convertFilmRelationToFilm(listRelationMovie)
+        } else {
+            allFilms = updateDatasFromNet()
+        }
+        changeFilms(allFilms as MutableList<Film>, genres)
+    }
 
+    suspend fun updateDatasFromNet(): List<Film> {
         val newGenresResult = repositoryRemote.loadGenreFromNET()
         val allFilmsResult = repositoryRemote.loadMoviesFromNET(SEARCH_PRINCIPLE)
         if (newGenresResult is Result.Success) {
             genres = newGenresResult.result
         }
         if (allFilmsResult is Result.Success) {
+            val filmRelation: MutableList<FilmRelation> = arrayListOf()
+            allFilmsResult.result.forEach {
+                filmRelation.add(
+                    FilmRelation(
+                        FilmEntity(
+                            id = it.id,
+                            title = it.title,
+                            posterPicture = it.posterPicture,
+                            ratings = it.ratings,
+                            overview = it.overview,
+                            adult = it.adult
+                        ), repositoryDB.convertGenreyToGenreEntity(genres)
+                    )
+                )
+            }
+            repositoryDB.saveFilmsToDB(allFilmsResult.result)
+            repositoryDB.saveGenreToDB(allFilmsResult.result, genres)
             allFilms = allFilmsResult.result
-            _uiFilmsState.value = ViewModelListState.Success(allFilms, genres)
-            repositoryDB.saveFilmsToDB(allFilms, genres)
-        }
+            return allFilmsResult.result
+        } else return arrayListOf()
     }
 
-    suspend fun loadFilmsList(){
-        var moviesFromDb: List<Film>
-        withContext(Dispatchers.IO) {
-            val listRelationMovie: List<FilmRelation> = repositoryDB.filmDAO.getFilms()
-            val genres: List<Genre> = repositoryDB.filmDAO.getAllGenre()
-
-            Log.v("test_log", "listRelationMovie = ${listRelationMovie.size}")
-            if (listRelationMovie != null && listRelationMovie.size > 0) {
-                moviesFromDb = repositoryDB.convertFilmRelationToFilm(listRelationMovie, genres)
-                moviesFromDb.sortedBy { it.ratings }
-                changeFilms(moviesFromDb as MutableList<Film>)
-            }
-        }
+    suspend fun loadFilmsList(): List<FilmRelation> = withContext(Dispatchers.IO) {
+        repositoryDB.filmDAO.getFilms()
     }
 
-    suspend fun loadGenresList(){
-//        var genres: List<Genre>
-        withContext(Dispatchers.IO) {
-            var genresNew: List<Genre> = repositoryDB.filmDAO.getAllGenre()
-            Log.v("test_log", "genresNew = ${genresNew.size}")
-
-            if (genresNew != null && genresNew.size > 0) {
-                 genres = genresNew
-//                genres = newGenresResult.result
-            }
-        }
+    suspend fun loadGenresList(): List<GenreEntity> = withContext(Dispatchers.IO) {
+        repositoryDB.filmDAO.getAllGenre()
     }
 
 }

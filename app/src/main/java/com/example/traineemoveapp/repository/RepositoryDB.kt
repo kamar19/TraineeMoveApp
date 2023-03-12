@@ -1,6 +1,5 @@
 package com.example.traineemoveapp.repository
 
-import android.util.Log
 import com.example.traineemoveapp.data.room.FilmDAO
 import com.example.traineemoveapp.data.room.TraineeMoveDatabase
 import com.example.traineemoveapp.model.*
@@ -10,61 +9,83 @@ import kotlinx.coroutines.withContext
 class RepositoryDB(val traineeMoveDatabase: TraineeMoveDatabase) {
     val filmDAO: FilmDAO = traineeMoveDatabase.movieDAO
 
-    fun convertFilmRelationToFilm(filmsList: List<FilmRelation>, genres:List<Genre>): List<Film> {
+    suspend fun convertFilmRelationToFilm(filmsList: List<FilmRelation>): List<Film> {
         val newMovies: MutableList<Film> = mutableListOf()
         for (filmRelation in filmsList) {
-//            val newGenres: List<Genre> = selectFilmsGenres(filmsList, genres )
-            val movie: Film = Film(
+            val movie = Film(
                 id = filmRelation.film.id,
                 title = filmRelation.film.title,
                 posterPicture = filmRelation.film.posterPicture,
-                backdropPicture = filmRelation.film.backdropPicture,
                 ratings = filmRelation.film.ratings,
                 overview = filmRelation.film.overview,
-                adult = filmRelation.film.adult,
-                vote_count = filmRelation.film.vote_count,
-                genres = getGenreIds(filmRelation.genreList),
-//                actors = filmRelation.actorList
+                genres = getGenreIds2(filmRelation.film.id),
+                adult = filmRelation.film.adult
             )
             newMovies.add(movie)
         }
         return newMovies
     }
 
-        fun getGenreIds(genreList: List<Genre>):List <Int> {
+    fun convertGenreEntityToGenre(genresEntity: List<GenreEntity>): List<Genre> {
+        val genres: MutableList<Genre> = mutableListOf()
+        for (genreEntity in genresEntity) {
+            val genre = Genre(genreId = genreEntity.genreId, genreFilmId = genreEntity.genreFilmId, name = genreEntity.name )
+            genres.add(genre)
+        }
+        return genres
+    }
+
+    fun convertGenreyToGenreEntity(genres: List<Genre>): List<GenreEntity> {
+        val genreEntity: MutableList<GenreEntity> = mutableListOf()
+        for (genre in genres) {
+            val genre = GenreEntity(id_joint = genre.genreId + genre.genreFilmId, genreId = genre.genreId, genreFilmId = genre.genreFilmId, name = genre.name)
+            genreEntity.add(genre)
+        }
+        return genreEntity
+    }
+
+
+    fun getGenreIds(genreList: List<GenreEntity>):List <Int> {
         val ids: MutableList <Int> = arrayListOf()
         genreList.forEach{ ids.add(it.genreId)}
         return ids
     }
 
+    suspend fun getGenreIds2(idFilm: Long):List <Int> {
+        val genres: List <GenreEntity> = getGenreFromDB(idFilm)
+        return getGenreIds(genres)
+    }
 
-    suspend fun saveFilmsToDB(films: List<Film>, genres: List<Genre>) {
+    suspend fun getGenreFromDB(idFilm: Long):List <GenreEntity> =
         withContext(Dispatchers.IO) {
-            val selectedGenres:List<Genre> = selectFilmsGenres(films, genres)
-            filmDAO.saveToDAO(films, selectedGenres)
+            filmDAO.getGenresFromFilm(idFilm)
+//            filmDAO.getAllGenre()
+        }
+
+
+    suspend fun saveFilmsToDB(films: List<Film>) {
+        withContext(Dispatchers.IO) {
+            filmDAO.saveToDAO(films)
         }
     }
 
-    fun selectFilmsGenres(films: List<Film>, genres: List<Genre>):List<Genre> {
-        val resultGenre: MutableList<Genre> = arrayListOf()
-        Log.v("test_log", "saveFilms - genres.size = " + genres.size)
-        var i = 0
+    suspend fun saveGenreToDB(films: List<Film>, genres: List<Genre>) {
+        withContext(Dispatchers.IO) {
+            val selectedGenres:List<GenreEntity> = selectFilmsGenres(films, genres)
+            filmDAO.insertGenres(selectedGenres)
+        }
+    }
+
+    fun selectFilmsGenres(films: List<Film>, genres: List<Genre>):List<GenreEntity> {
+        val resultGenre: MutableList<GenreEntity> = arrayListOf()
         for (genre in genres) {
             films.forEach{
-//                it.genreList.forEach {it2->
                 it.genres.forEach {it2->
-//                    if (genre == it2) {
                     if (genre.genreId  == it2) {
-
-                        Log.v("test_log", "i = " + i + " genre.name = " + genre.name)
-                        i++
-                        resultGenre.add(genre)
-                    }
+                          resultGenre.add(GenreEntity(id_joint = it.id + genre.genreId, genreFilmId = it.id, genreId = genre.genreId, name = genre.name))
+                        }
                 }
             }
-        }
-        resultGenre.forEach {
-            Log.v("test_log", "resultGenre = " + it.name + ", it.genreId = " + it.genreId)
         }
         return resultGenre
     }

@@ -9,14 +9,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Entity(
-        tableName = DBContract.FilmsColumns.TABLE_NAME_ACTOR,
-//        foreignKeys = [ForeignKey(
-//                entity = FilmEntity::class,
-//                parentColumns = arrayOf("id"),
-//                childColumns = arrayOf("actorMovieId"),
-//                onDelete = ForeignKey.CASCADE,
-//        )],
-        primaryKeys = arrayOf("actorfilmId", "actorId")
+    tableName = DBContract.FilmsColumns.TABLE_NAME_ACTOR,
+    primaryKeys = arrayOf("actorfilmId", "actorId")
 )
 @Serializable
 @Parcelize

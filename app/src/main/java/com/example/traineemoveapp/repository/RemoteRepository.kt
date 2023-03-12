@@ -11,12 +11,20 @@ import com.example.traineemoveapp.utils.Result
 
 class RemoteRepository(val remoteDataSource: RemoteDataSource) {
 
-    suspend fun loadGenreFromNET(): Result<List<Genre>, Throwable> =
-        remoteDataSource.getGenres()
-        .mapSuccess { dto -> dto.map { genre -> Genre(genreId = genre.genreId, name = genre.name) } }
+    suspend fun loadGenreFromNET(): Result<List<Genre>, Throwable> = remoteDataSource
+        .getGenres()
+        .mapSuccess { dto ->
+            dto.map { genre ->
+                Genre(
+                    //id_joint = genre.id_joint,
+                    genreId = genre.genreId,
+                    name = genre.name
+                )
+            }
+        }
 
-    suspend fun loadActorFromNET(idMovie: Long): Result<List<Actor>, Throwable> =
-        remoteDataSource.getActors(idMovie)
+    suspend fun loadActorFromNET(idMovie: Long): Result<List<Actor>, Throwable> = remoteDataSource
+        .getActors(idMovie)
         .mapSuccess { dto ->
             dto.map { actors ->
                 Actor(
@@ -28,30 +36,19 @@ class RemoteRepository(val remoteDataSource: RemoteDataSource) {
             }
         }
 
-    suspend fun loadMovieFromNET(filmId: Long): Result<DTO.MovieDetail, Throwable> =
-        remoteDataSource.getMovie(filmId )
+    suspend fun loadMovieFromNET(filmId: Long): Result<DTO.FilmDetail, Throwable> = remoteDataSource.getMovie(filmId)
 
-    suspend fun loadMoviesFromNET(seachMovie: String): Result<List<Film>, Throwable> =
-        remoteDataSource.getMovies(seachMovie)
+    suspend fun loadMoviesFromNET(seachMovie: String): Result<List<Film>, Throwable> = remoteDataSource
+        .getFilms(seachMovie)
         .mapSuccess { dto ->
             dto.map { seachMovie ->
-                val actorsResult = loadActorFromNET(seachMovie.id)
-                val actors: List<Actor>
-                when (actorsResult) {
-                    is Result.Success -> {
-                        actors = actorsResult.result
-                    }
-                    else -> actors = arrayListOf()
-                }
                 Film(
                     id = seachMovie.id,
                     title = seachMovie.title,
                     posterPicture = BASE_URL_MOVIES + seachMovie.posterPicture,
                     ratings = seachMovie.vote_average / 2,
                     overview = seachMovie.overview,
-                    vote_count = seachMovie.vote_count,
-                    genres = seachMovie.genreIds ,
-//                    actors = actors,
+                    genres = seachMovie.genreIds,
                     adult = if (seachMovie.adult) "16+" else "13+"
                 )
             }

@@ -11,7 +11,7 @@ class DTO {
             @SerialName("page")
             val page: Int,
             @SerialName("results")
-            val movies: List<MovieForNET>
+            val movies: List<FilmForNET>
     )
     @Serializable
     data class ResultGenre(
@@ -26,11 +26,9 @@ class DTO {
             val actors: List<Actor>
     )
     @Serializable
-    data class MovieForNET(
+    data class FilmForNET(
             @SerialName("id")
             val id: Long,
-            @SerialName("backdrop_path")
-            val backdropPicture: String,
             @SerialName("title")
             val title: String,
             @SerialName("poster_path")
@@ -41,14 +39,11 @@ class DTO {
             val vote_average: Float,
             val overview: String,
             val adult: Boolean,
-            val vote_count: Int
     )
     @Serializable
-    data class MovieDetail(
+    data class FilmDetail(
             @SerialName("id")
             val id: Long,
-            @SerialName("backdrop_path")
-            val backdropPicture: String,
             @SerialName("title")
             val title: String,
             @SerialName("release_date")
@@ -61,6 +56,5 @@ class DTO {
             val vote_average: Float,
             val overview: String,
             val adult: Boolean,
-            val vote_count: Int
     )
 }
