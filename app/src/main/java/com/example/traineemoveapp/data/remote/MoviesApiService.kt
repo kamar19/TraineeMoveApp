@@ -14,5 +14,5 @@ interface MoviesApiService {
     suspend fun getSearchActors(@Path("movie_id") movie_id: Long?): DTO.ResultActor
 
     @GET("movie/{movie_id}?language=ru-ru&query=2&include_adult=false")
-    suspend fun getMovie(@Path("movie_id") movie_id: Long?): DTO.MovieDetail
+    suspend fun getMovie(@Path("movie_id") movie_id: Long?): DTO.FilmDetail
 }

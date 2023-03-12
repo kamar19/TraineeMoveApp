@@ -13,7 +13,7 @@ interface MoviesHttpClient {
     val moviesApi: MoviesApiService
 }
 
-class MoviesHttpClientImpl : MoviesHttpClient {
+class FilmsHttpClientImpl : MoviesHttpClient {
     private val client = OkHttpClient
         .Builder()
         .addInterceptor(TraineeMoveInterceptor())
