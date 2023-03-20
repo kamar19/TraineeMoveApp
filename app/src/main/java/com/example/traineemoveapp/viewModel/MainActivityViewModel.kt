@@ -3,15 +3,18 @@ package com.example.traineemoveapp.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.traineemoveapp.MainActivity.Companion.SEARCH_PRINCIPLE
-import com.example.traineemoveapp.model.Film
-import com.example.traineemoveapp.model.Genre
+import com.example.traineemoveapp.model.*
 import com.example.traineemoveapp.repository.RemoteRepository
+import com.example.traineemoveapp.repository.RepositoryDB
 import com.example.traineemoveapp.viewModel.states.ViewModelListState
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import com.example.traineemoveapp.utils.Result
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class MainActivityViewModel(val filmRepository: RemoteRepository) : ViewModel() {
+class MainActivityViewModel(val repositoryRemote: RemoteRepository, val repositoryDB: RepositoryDB
+) : ViewModel() {
     private val selectedGenres: MutableList<Int> = mutableListOf()
     var genres: List<Genre> = mutableListOf()
     var allFilms: List<Film> = mutableListOf()
@@ -26,15 +29,23 @@ class MainActivityViewModel(val filmRepository: RemoteRepository) : ViewModel() 
         }
     }
 
+    fun refresh() {
+        scope.launch {
+            allFilms = updateDatasFromNet()
+            changeFilms(allFilms as MutableList<Film>, genres)
+        }
+    }
+
     fun findFilms() {
         if (searchText.length > 0) {
             changeFilms(allFilms.filter {
                 it.genres.containsAll(getSelectedGenres()) && it.title.contains(
                     searchText, true
                 )
-            } as MutableList<Film>)
+            } as MutableList<Film>, genres)
         } else {
-            changeFilms(allFilms.filter { it.genres.containsAll(getSelectedGenres()) } as MutableList<Film>)
+            changeFilms(allFilms.filter { it.genres.containsAll(getSelectedGenres()) } as MutableList<Film>,
+                genres)
         }
     }
 
@@ -47,7 +58,7 @@ class MainActivityViewModel(val filmRepository: RemoteRepository) : ViewModel() 
     }
 
     @JvmName("getSelectedGenres1")
-    fun getSelectedGenres(): MutableList<Int> {
+    fun getSelectedGenres(): List<Int> {
         return selectedGenres
     }
 
@@ -59,22 +70,59 @@ class MainActivityViewModel(val filmRepository: RemoteRepository) : ViewModel() 
         }
     }
 
-    fun changeFilms(newfilms: MutableList<Film>) {
+    fun changeFilms(newfilms: MutableList<Film>, genres: List<Genre>) {
         viewModelScope.launch {
             _uiFilmsState.emit(ViewModelListState.Success(newfilms, genres))
         }
     }
 
     suspend fun startValue() {
-        val allFilmsResult = filmRepository.loadMoviesFromNET(SEARCH_PRINCIPLE)
-        val newGenresResult = filmRepository.loadGenreFromNET()
+        val listGenreEntity: List<GenreEntity> = loadGenresList()
+        genres = repositoryDB.convertGenreEntityToGenre(listGenreEntity)
+        val listRelationMovie: List<FilmRelation> = loadFilmsList()
+        if (listRelationMovie.size > 0) {
+            allFilms = repositoryDB.convertFilmRelationToFilm(listRelationMovie)
+        } else {
+            allFilms = updateDatasFromNet()
+        }
+        changeFilms(allFilms as MutableList<Film>, genres)
+    }
+
+    suspend fun updateDatasFromNet(): List<Film> {
+        val newGenresResult = repositoryRemote.loadGenreFromNET()
+        val allFilmsResult = repositoryRemote.loadMoviesFromNET(SEARCH_PRINCIPLE)
         if (newGenresResult is Result.Success) {
             genres = newGenresResult.result
         }
         if (allFilmsResult is Result.Success) {
+            val filmRelation: MutableList<FilmRelation> = arrayListOf()
+            allFilmsResult.result.forEach {
+                filmRelation.add(
+                    FilmRelation(
+                        FilmEntity(
+                            id = it.id,
+                            title = it.title,
+                            posterPicture = it.posterPicture,
+                            ratings = it.ratings,
+                            overview = it.overview,
+                            adult = it.adult
+                        ), repositoryDB.convertGenreyToGenreEntity(genres)
+                    )
+                )
+            }
+            repositoryDB.saveFilmsToDB(allFilmsResult.result)
+            repositoryDB.saveGenreToDB(allFilmsResult.result, genres)
             allFilms = allFilmsResult.result
-            _uiFilmsState.value = ViewModelListState.Success(allFilms, genres)
-        }
+            return allFilmsResult.result
+        } else return arrayListOf()
+    }
+
+    suspend fun loadFilmsList(): List<FilmRelation> = withContext(Dispatchers.IO) {
+        repositoryDB.filmDAO.getFilms()
+    }
+
+    suspend fun loadGenresList(): List<GenreEntity> = withContext(Dispatchers.IO) {
+        repositoryDB.filmDAO.getAllGenre()
     }
 
 }

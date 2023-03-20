@@ -10,6 +10,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,20 +33,26 @@ import com.example.traineemoveapp.model.Genre
 import com.example.traineemoveapp.viewModel.MainActivityViewModel
 import com.example.traineemoveapp.viewModel.states.ViewModelListState
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun FilmListFragment(modifier: Modifier = Modifier,
-                     viewModel: MainActivityViewModel,
+fun FilmListFragment(viewModel: MainActivityViewModel,
                      titleText: String,
                      onClickToDetailScreen: (Long) -> Unit = {},
                      onClickToSelectCategory: (Int) -> Unit = {}
 ) {
     val state = viewModel.uiFilmsState.collectAsState()
+    var isRefreshing = false
+    val pullRefreshState = rememberPullRefreshState(isRefreshing, { viewModel.refresh() })
+
     when (state.value) {
         is ViewModelListState.Loading -> ProgressIndicator()
         is ViewModelListState.Error -> ErrorBox()
+        is ViewModelListState.Refreshing -> {
+            isRefreshing = (state.value as ViewModelListState.Refreshing).isRefreshing
+        }
         is ViewModelListState.Success -> {
             Column(
-                modifier = modifier,
+                modifier = Modifier.pullRefresh(pullRefreshState),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -61,6 +70,9 @@ fun FilmListFragment(modifier: Modifier = Modifier,
                 CategoryFilmsView(
                     viewModel, state, onClickToSelectCategory
                 )
+                PullRefreshIndicator(
+                    isRefreshing, pullRefreshState, Modifier.align(Alignment.CenterHorizontally)
+                )
                 FilmListGrid(
                     state,
                     modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.margin_normal)),
@@ -73,7 +85,12 @@ fun FilmListFragment(modifier: Modifier = Modifier,
 
 @Composable
 fun ErrorBox() {
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth().fillMaxHeight() ) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+    ) {
         Text(
             text = stringResource(R.string.error_net_text), modifier = Modifier.align(
                 Alignment.Center
@@ -84,7 +101,12 @@ fun ErrorBox() {
 
 @Composable
 fun ProgressIndicator() {
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth().fillMaxHeight() ) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+    ) {
         CircularProgressIndicator()
         Text(
             text = stringResource(R.string.load_net_text), modifier = Modifier.align(
@@ -141,24 +163,25 @@ fun FilmListGrid(
         onClickToDetailScreen: (Long) -> Unit = {},
 ) {
     when (state.value) {
-        is ViewModelListState.Loading -> ProgressIndicator()
-        is ViewModelListState.Error -> ErrorBox()
         is ViewModelListState.Success -> {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(COUNT_ROWS),
                 horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.film_item_horizontal)),
                 verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.film_item_vertical)),
             ) {
-                val films = (state.value as ViewModelListState.Success).listFilm
-                items(
-                    items = films,
-                ) { film ->
-                    FilmListItem(film = film) {
-                        film.id?.let { onClickToDetailScreen(it) }
+                if (state.value is ViewModelListState.Success) {
+                    val films = (state.value as ViewModelListState.Success).listFilm
+                    items(
+                        items = films,
+                    ) { film ->
+                        FilmListItem(film = film) {
+                            film.id?.let { onClickToDetailScreen(it) }
+                        }
                     }
                 }
             }
         }
+        else -> {}
     }
 }
 
@@ -168,13 +191,11 @@ fun CategoryFilmsView(viewModel: MainActivityViewModel,
                       onClickToSelectCategory: (Int) -> Unit = {}
 ) {
     when (state.value) {
-        is ViewModelListState.Loading -> ProgressIndicator()
-        is ViewModelListState.Error -> ErrorBox()
         is ViewModelListState.Success -> {
             val genres = (state.value as ViewModelListState.Success).genres
             LazyRow(contentPadding = PaddingValues(start = 20.dp)) {
                 items(items = genres) { category ->
-                    category.id?.let {
+                    category.genreId?.let {
                         val textChipRememberOneState = remember {
                             mutableStateOf(viewModel.checkSelectedGenre(it))
                         }
@@ -186,6 +207,7 @@ fun CategoryFilmsView(viewModel: MainActivityViewModel,
                 }
             }
         }
+        else -> {}
     }
 }
 
