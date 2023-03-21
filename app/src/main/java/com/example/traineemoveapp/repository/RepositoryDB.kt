@@ -5,8 +5,9 @@ import com.example.traineemoveapp.data.room.TraineeMoveDatabase
 import com.example.traineemoveapp.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class RepositoryDB(val traineeMoveDatabase: TraineeMoveDatabase) {
+class RepositoryDB @Inject constructor(traineeMoveDatabase: TraineeMoveDatabase) {
     val filmDAO: FilmDAO = traineeMoveDatabase.movieDAO
 
     suspend fun convertFilmRelationToFilm(filmsList: List<FilmRelation>): List<Film> {

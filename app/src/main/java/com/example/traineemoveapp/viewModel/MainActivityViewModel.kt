@@ -12,8 +12,9 @@ import kotlinx.coroutines.launch
 import com.example.traineemoveapp.utils.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class MainActivityViewModel(val repositoryRemote: RemoteRepository, val repositoryDB: RepositoryDB
+class MainActivityViewModel @Inject constructor(val repositoryRemote: RemoteRepository, val repositoryDB: RepositoryDB
 ) : ViewModel() {
     private val selectedGenres: MutableList<Int> = mutableListOf()
     var genres: List<Genre> = mutableListOf()

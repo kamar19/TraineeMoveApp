@@ -8,8 +8,9 @@ import com.example.traineemoveapp.model.Film
 import com.example.traineemoveapp.model.Genre
 import com.example.traineemoveapp.utils.mapSuccess
 import com.example.traineemoveapp.utils.Result
+import javax.inject.Inject
 
-class RemoteRepository(val remoteDataSource: RemoteDataSource) {
+class RemoteRepository @Inject constructor(val remoteDataSource: RemoteDataSource) {
 
     suspend fun loadGenreFromNET(): Result<List<Genre>, Throwable> = remoteDataSource
         .getGenres()

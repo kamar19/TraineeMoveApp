@@ -13,15 +13,17 @@ import com.example.traineemoveapp.ui.theme.TraineeMoveAppTheme
 import com.example.traineemoveapp.repository.RemoteRepository
 import com.example.traineemoveapp.repository.RepositoryDB
 import com.example.traineemoveapp.viewModel.MainActivityViewModel
+import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {
 
+    @Inject
+    lateinit var viewModel: MainActivityViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val filmRepository = RemoteRepository(RemoteDataSource())
-        val traineeMoveDatabase = TraineeMoveDatabase.createInstance(this)
-        val repositoryDB = RepositoryDB(traineeMoveDatabase)
-        val viewModel = MainActivityViewModel(filmRepository, repositoryDB)
+        (application as MyApplication).appComponent.inject(this)
+
         setContent {
             TraineeMoveAppTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
