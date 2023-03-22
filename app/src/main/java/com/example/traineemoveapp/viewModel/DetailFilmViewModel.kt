@@ -10,8 +10,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import com.example.traineemoveapp.utils.Result
+import javax.inject.Inject
 
-class DetailFilmViewModel(val filmRepository: RemoteRepository, idFilm: Long) : ViewModel() {
+class DetailFilmViewModel @Inject constructor(val filmRepository: RemoteRepository) : ViewModel() {
+    var idFilm: Long = 0
     private var scope = viewModelScope
     private val _uiFilmDetailState = MutableStateFlow<ViewModelDetailsState>(ViewModelDetailsState.Loading)
     val uiFilmDetailState: StateFlow<ViewModelDetailsState> get() = _uiFilmDetailState.asStateFlow()
