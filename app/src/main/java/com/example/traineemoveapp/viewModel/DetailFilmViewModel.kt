@@ -3,7 +3,7 @@ package com.example.traineemoveapp.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.traineemoveapp.model.Actor
-import com.example.traineemoveapp.repository.RemoteRepository
+import com.example.traineemoveapp.data.repository.Repository
 import com.example.traineemoveapp.viewModel.states.ViewModelDetailsState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import com.example.traineemoveapp.utils.Result
 import javax.inject.Inject
 
-class DetailFilmViewModel @Inject constructor(val filmRepository: RemoteRepository) : ViewModel() {
+class DetailFilmViewModel @Inject constructor(val repository: Repository) : ViewModel() {
     var idFilm: Long = 0
     private var scope = viewModelScope
     private val _uiFilmDetailState = MutableStateFlow<ViewModelDetailsState>(ViewModelDetailsState.Loading)
@@ -26,7 +26,7 @@ class DetailFilmViewModel @Inject constructor(val filmRepository: RemoteReposito
 
     fun updateFilm(idFilm: Long) {
         scope.launch {
-            val actorsResult = filmRepository.loadActorFromNET(idFilm)
+            val actorsResult = repository.remoteRepository.loadActorFromNET(idFilm)
             val actors: List<Actor>
             when (actorsResult) {
                 is Result.Success -> {
@@ -34,7 +34,7 @@ class DetailFilmViewModel @Inject constructor(val filmRepository: RemoteReposito
                 }
                 else -> actors = arrayListOf()
             }
-            val filmResult = filmRepository.loadMovieFromNET(idFilm)
+            val filmResult = repository.remoteRepository.loadMovieFromNET(idFilm)
             when (filmResult) {
                 is Result.Success -> _uiFilmDetailState.value = ViewModelDetailsState.Success(
                     filmResult.result, actors

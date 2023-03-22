@@ -2,7 +2,7 @@ package com.example.traineemoveapp.di.module
 
 import android.content.Context
 import com.example.traineemoveapp.data.room.TraineeMoveDatabase
-import com.example.traineemoveapp.repository.RepositoryDB
+import com.example.traineemoveapp.data.repository.RepositoryDB
 import dagger.Module
 import dagger.Provides
 

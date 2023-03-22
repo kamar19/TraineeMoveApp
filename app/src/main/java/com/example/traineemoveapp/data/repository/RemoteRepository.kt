@@ -1,4 +1,4 @@
-package com.example.traineemoveapp.repository
+package com.example.traineemoveapp.data.repository
 
 import com.example.traineemoveapp.MainActivity.Companion.BASE_URL_MOVIES
 import com.example.traineemoveapp.data.remote.DTO

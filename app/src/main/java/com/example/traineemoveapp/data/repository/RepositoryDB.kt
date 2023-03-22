@@ -1,4 +1,4 @@
-package com.example.traineemoveapp.repository
+package com.example.traineemoveapp.data.repository
 
 import com.example.traineemoveapp.data.room.FilmDAO
 import com.example.traineemoveapp.data.room.TraineeMoveDatabase

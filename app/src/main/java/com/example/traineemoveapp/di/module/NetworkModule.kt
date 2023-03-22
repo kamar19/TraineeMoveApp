@@ -1,7 +1,7 @@
 package com.example.traineemoveapp.di.module
 
 import com.example.traineemoveapp.data.remote.RemoteDataSource
-import com.example.traineemoveapp.repository.RemoteRepository
+import com.example.traineemoveapp.data.repository.RemoteRepository
 import dagger.Module
 import dagger.Provides
 
