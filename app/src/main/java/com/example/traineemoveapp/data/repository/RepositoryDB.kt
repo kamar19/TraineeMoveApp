@@ -1,12 +1,13 @@
-package com.example.traineemoveapp.repository
+package com.example.traineemoveapp.data.repository
 
 import com.example.traineemoveapp.data.room.FilmDAO
 import com.example.traineemoveapp.data.room.TraineeMoveDatabase
 import com.example.traineemoveapp.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class RepositoryDB(val traineeMoveDatabase: TraineeMoveDatabase) {
+class RepositoryDB @Inject constructor(traineeMoveDatabase: TraineeMoveDatabase) {
     val filmDAO: FilmDAO = traineeMoveDatabase.movieDAO
 
     suspend fun convertFilmRelationToFilm(filmsList: List<FilmRelation>): List<Film> {
@@ -45,22 +46,20 @@ class RepositoryDB(val traineeMoveDatabase: TraineeMoveDatabase) {
     }
 
 
-    fun getGenreIds(genreList: List<GenreEntity>):List <Int> {
+    fun getGenreIds(genreList: List<GenreEntity>): List<Int> {
         val ids: MutableList <Int> = arrayListOf()
-        genreList.forEach{ ids.add(it.genreId)}
+        genreList.forEach { ids.add(it.genreId) }
         return ids
     }
 
-    suspend fun getGenreIds2(idFilm: Long):List <Int> {
+    suspend fun getGenreIds2(idFilm: Long): List<Int> {
         val genres: List <GenreEntity> = getGenreFromDB(idFilm)
         return getGenreIds(genres)
     }
 
-    suspend fun getGenreFromDB(idFilm: Long):List <GenreEntity> =
-        withContext(Dispatchers.IO) {
-            filmDAO.getGenresFromFilm(idFilm)
-//            filmDAO.getAllGenre()
-        }
+    suspend fun getGenreFromDB(idFilm: Long): List<GenreEntity> = withContext(Dispatchers.IO) {
+        filmDAO.getGenresFromFilm(idFilm)
+    }
 
 
     suspend fun saveFilmsToDB(films: List<Film>) {
@@ -71,19 +70,26 @@ class RepositoryDB(val traineeMoveDatabase: TraineeMoveDatabase) {
 
     suspend fun saveGenreToDB(films: List<Film>, genres: List<Genre>) {
         withContext(Dispatchers.IO) {
-            val selectedGenres:List<GenreEntity> = selectFilmsGenres(films, genres)
+            val selectedGenres: List<GenreEntity> = selectFilmsGenres(films, genres)
             filmDAO.insertGenres(selectedGenres)
         }
     }
 
-    fun selectFilmsGenres(films: List<Film>, genres: List<Genre>):List<GenreEntity> {
+    fun selectFilmsGenres(films: List<Film>, genres: List<Genre>): List<GenreEntity> {
         val resultGenre: MutableList<GenreEntity> = arrayListOf()
         for (genre in genres) {
-            films.forEach{
-                it.genres.forEach {it2->
-                    if (genre.genreId  == it2) {
-                          resultGenre.add(GenreEntity(id_joint = it.id + genre.genreId, genreFilmId = it.id, genreId = genre.genreId, name = genre.name))
-                        }
+            films.forEach {
+                it.genres.forEach { it2 ->
+                    if (genre.genreId == it2) {
+                        resultGenre.add(
+                            GenreEntity(
+                                id_joint = it.id + genre.genreId,
+                                genreFilmId = it.id,
+                                genreId = genre.genreId,
+                                name = genre.name
+                            )
+                        )
+                    }
                 }
             }
         }

@@ -1,7 +1,6 @@
 package com.example.traineemoveapp.data
 
 import com.example.traineemoveapp.MainActivity.Companion.BASE_URL
-import com.example.traineemoveapp.data.remote.MoviesApiService
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -9,11 +8,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 
-interface MoviesHttpClient {
-    val moviesApi: MoviesApiService
-}
-
-class FilmsHttpClientImpl : MoviesHttpClient {
+class FilmsHttpClient {
     private val client = OkHttpClient
         .Builder()
         .addInterceptor(TraineeMoveInterceptor())
@@ -25,11 +20,11 @@ class FilmsHttpClientImpl : MoviesHttpClient {
     }
 
     @Suppress("EXPERIMENTAL_API_USAGE")
-    private val retrofit = Retrofit
+    val retrofit = Retrofit
         .Builder()
         .client(client)
         .baseUrl(BASE_URL)
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
-    override val moviesApi: MoviesApiService = this.retrofit.create(MoviesApiService::class.java)
+
 }
